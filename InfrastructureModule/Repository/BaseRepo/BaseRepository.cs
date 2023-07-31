@@ -17,10 +17,9 @@ namespace InfrastructureModule.Repository
         {
             _context = context;
         }
-        public async Task DeleteAsync(T entity)
+        public void Delete(T entity)
         {
             _context.Set<T>().Remove(entity);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<IList<T>> GetAllAsync()
@@ -41,20 +40,17 @@ namespace InfrastructureModule.Repository
         public async Task InsertAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity).ConfigureAwait(false);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task InsertRange(IList<T> entities)
         {
             await _context.Set<T>().AddRangeAsync(entities).ConfigureAwait(false);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
 
-        public async Task UpdateAsync(T entity)
+        public void Update(T entity)
         {
             _context.Set<T>().Attach(entity).State = EntityState.Modified;
-            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

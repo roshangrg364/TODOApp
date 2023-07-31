@@ -21,100 +21,147 @@ namespace ServiceModule.Service
         private readonly UserRepositoryInterface _userRepo;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IUnitOfWork _unitOfWork;
         public UserService(UserRepositoryInterface userRepo,
             UserManager<User> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IUnitOfWork unitOfWork)
         {
             _userRepo = userRepo;
             _userManager = userManager;
             _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
         }
         public async Task Activate(string id)
         {
-            var user = await _userRepo.GetByIdString(id).ConfigureAwait(false) ?? throw new UserNotFoundException();
-            user.Activate();
-            await _userRepo.UpdateAsync(user).ConfigureAwait(false);
+            using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var user = await _userRepo.GetByIdString(id).ConfigureAwait(false) ?? throw new UserNotFoundException();
+                    user.Activate();
+                     _userRepo.Update(user);
+                    await _unitOfWork.CompleteAsync().ConfigureAwait(false);
+                    await tx.CommitAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    await tx.RollbackAsync().ConfigureAwait(false);
+                    throw;
+                }
+               
+            }
 
         }
 
       
         public async Task<UserResponseDto> Create(UserDto dto)
         {
-            await ValidateUser(dto.MobileNumber, dto.EmailAddress);
-            var user = new User(dto.Name, dto.UserName, dto.EmailAddress, dto.Type)
+            using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
             {
-                PhoneNumber = dto.MobileNumber,
-            };
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            var userReponseModel = new UserResponseDto() { UserId = user.Id};
-            if (result.Succeeded)
-            {
-
-                foreach(var roleId in dto.Roles)
+                try
                 {
-                    var role = await _roleManager.FindByIdAsync(roleId).ConfigureAwait(false) ?? throw new RoleNotFoundException();
-                    await _userManager.AddToRoleAsync(user, role.Name).ConfigureAwait(false);
+                    await ValidateUser(dto.MobileNumber, dto.EmailAddress);
+                    var user = new User(dto.Name, dto.UserName, dto.EmailAddress, dto.Type)
+                    {
+                        PhoneNumber = dto.MobileNumber,
+                    };
+                    var result = await _userManager.CreateAsync(user, dto.Password).ConfigureAwait(false);
+                    var userReponseModel = new UserResponseDto() { UserId = user.Id };
+                    if (result.Succeeded)
+                    {
+
+                        foreach (var roleId in dto.Roles)
+                        {
+                            var role = await _roleManager.FindByIdAsync(roleId).ConfigureAwait(false) ?? throw new RoleNotFoundException();
+                            await _userManager.AddToRoleAsync(user, role.Name).ConfigureAwait(false);
+                        }
+
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
+                        var emailConfirmationLink = $"{dto.CurrentSiteDomain}/Account/Account/ConfirmEmail?email={user.Email}&token={System.Web.HttpUtility.UrlEncode(token)}";
+                        userReponseModel.EmailConfirmationLink = emailConfirmationLink;
+                      
+
+                    }
+                    else
+                    {
+                        var errors = "</br>";
+                        foreach (var error in result.Errors)
+                        {
+                            errors = errors + $"{error.Description} </br>";
+                        }
+                        throw new CustomException(errors);
+                    }
+                    await tx.CommitAsync().ConfigureAwait(false);
+                    return userReponseModel;
                 }
-
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var emailConfirmationLink = $"{dto.CurrentSiteDomain}/Account/Account/ConfirmEmail?email={user.Email}&token={System.Web.HttpUtility.UrlEncode(token)}";
-                userReponseModel.EmailConfirmationLink = emailConfirmationLink;
-               
-
-            }
-            else
-            {
-                var errors = "</br>";
-                foreach (var error in result.Errors)
+                catch (Exception ex)
                 {
-                    errors = errors + $"{error.Description} </br>";
+                    await tx.RollbackAsync().ConfigureAwait(false);
+                    throw;
                 }
-                throw new CustomException(errors);
             }
-            return userReponseModel;
+            
         }
 
      
         public async Task Deactivate(string id)
         {
-            var user = await _userRepo.GetByIdString(id).ConfigureAwait(false) ?? throw new UserNotFoundException();
-            user.Deactivate();
-            await _userRepo.UpdateAsync(user).ConfigureAwait(false);
+            using(var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var user = await _userRepo.GetByIdString(id).ConfigureAwait(false) ?? throw new UserNotFoundException();
+                    user.Deactivate();
+                  _userRepo.Update(user);
+                    await _unitOfWork.CompleteAsync();
+                    await tx.CommitAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    await tx.RollbackAsync().ConfigureAwait(false);
+                    throw;
+                }
+            }
+           
         }
 
         public async Task Edit(UserEditDto dto)
         {
-            try
+            using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
             {
-                var user = await _userManager.FindByIdAsync(dto.Id).ConfigureAwait(false) ?? throw new UserNotFoundException();
-                user.Update(dto.Name, dto.UserName, dto.EmailAddress, dto.MobileNumber);
-               var response = await _userManager.UpdateAsync(user).ConfigureAwait(false);
-                if(response.Succeeded)
+                try
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
-                    foreach (var role in userRoles)
+                    var user = await _userManager.FindByIdAsync(dto.Id).ConfigureAwait(false) ?? throw new UserNotFoundException();
+                    user.Update(dto.Name, dto.UserName, dto.EmailAddress, dto.MobileNumber);
+                    var response = await _userManager.UpdateAsync(user).ConfigureAwait(false);
+                    if (response.Succeeded)
                     {
-                        await _userManager.RemoveFromRoleAsync(user, role).ConfigureAwait(false);
+                        var userRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+                        foreach (var role in userRoles)
+                        {
+                            await _userManager.RemoveFromRoleAsync(user, role).ConfigureAwait(false);
+                        }
+                        foreach (var roleId in dto.Roles)
+                        {
+                            var role = await _roleManager.FindByIdAsync(roleId).ConfigureAwait(false) ?? throw new RoleNotFoundException();
+                            await _userManager.AddToRoleAsync(user, role.Name).ConfigureAwait(false);
+                        }
+
                     }
-                    foreach (var roleId in dto.Roles)
+                    else
                     {
-                        var role = await _roleManager.FindByIdAsync(roleId).ConfigureAwait(false) ?? throw new RoleNotFoundException();
-                        await _userManager.AddToRoleAsync(user, role.Name).ConfigureAwait(false);
+                        throw new CustomException(string.Join("</br>", response.Errors.Select(a => a.Description).ToList()));
                     }
+                    await tx.CommitAsync().ConfigureAwait(false);
+
                 }
-                else
+                catch (Exception ex)
                 {
-
+                    await tx.RollbackAsync().ConfigureAwait(false);
+                    throw;
                 }
-                   
-
             }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-           
         }
 
       

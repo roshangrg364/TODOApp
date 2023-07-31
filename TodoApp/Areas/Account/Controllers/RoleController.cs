@@ -39,7 +39,7 @@ namespace TodoApp.Areas.Account.Controllers
             _userManager = userManager;
         }
         [Authorize(Policy ="Role-View")]
-        public async IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var roles =await  _roleManager.Roles.Where(a=>a.Name != DomainModule.Entity.User.TypeSuperAdmin).ToListAsync();
             var roleIndexViewModels = new List<RoleIndexViewModel>();

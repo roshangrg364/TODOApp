@@ -11,8 +11,8 @@ namespace DomainModule.BaseRepo
         Task<IList<T>> GetAllAsync();
         Task InsertAsync(T entity);
         Task InsertRange(IList<T> entities);
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(T entity);
+        void Update(T entity);
+        void Delete(T entity);
         IQueryable<T> GetQueryable();
         Task<T?> GetById(long id);
     }
