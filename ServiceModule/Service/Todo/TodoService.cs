@@ -102,6 +102,27 @@ namespace ServiceModule.Service
             }
         }
 
+        public async Task<TodoResponseDto> GetById(int todoId)
+        {
+            try
+            {
+                var todo = await _todoRepo.GetById(todoId).ConfigureAwait(false) ?? throw new CustomException("Todo not found");
+                return new TodoResponseDto { 
+                Id = todo.Id,
+                Description = todo.Description,
+                Title= todo.Title,
+                DueDate = todo.DueDate,
+                PriorityLevel=todo.PriorityLevel
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
         public async Task MarkAsComplete(int todoId,string userId)
         {
             using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))

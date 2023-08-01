@@ -14,5 +14,6 @@ namespace DomainModule.ServiceInterface
         Task Delete(int todoId);
         Task<List<TodoDto>> GetAllTodosOfUser(string userId);
         Task MarkAsComplete(int todoId,string userId);
+        Task<TodoResponseDto> GetById(int todoId);
     }
 }

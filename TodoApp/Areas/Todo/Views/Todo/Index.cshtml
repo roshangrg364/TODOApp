@@ -1,6 +1,8 @@
-﻿@{
+﻿@model List<TodoIndexViewModel>
+@{
 
 }
+@using DomainModule.Enums
 <section class="vh-100 gradient-custom-2">
     <div class="container  ">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -19,116 +21,55 @@
                                     <i class="fas fa-plus fa-lg text-info"></i> Add
                                 </a>
                             </div>
-                           
+
 
                         </div>
                         <table class="table  mb-0">
                             <thead>
                                 <tr>
-                                    <th scope="col">Team Member</th>
-                                    <th scope="col">Task</th>
+                                    <th scope="col">S.No</th>
+                                    <th scope="col">Title</th>
                                     <th scope="col">Priority</th>
-                                    <th scope="col">Actions</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Due Date</th>
+                                    <th scope="col">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="fw-normal">
-                                    <th>
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
-                                             alt="avatar 1" style="width: 45px; height: auto;">
-                                        <span class="ms-2">Alice Mayer</span>
-                                    </th>
-                                    <td class="align-middle">
-                                        <span>Call Sam For payments</span>
-                                    </td>
-                                    <td class="align-middle">
-                                        <h6 class="mb-0"><span class="badge bg-danger">High priority</span></h6>
-                                    </td>
-                                    <td class="align-middle">
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Done">
-                                            <i class="fas fa-check fa-lg text-success me-3"></i>
-                                        </a>
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Remove">
-                                            <i class="fas fa-trash-alt fa-lg text-warning"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr class="fw-normal">
-                                    <th>
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
-                                             alt="avatar 1" style="width: 45px; height: auto;">
-                                        <span class="ms-2">Kate Moss</span>
-                                    </th>
-                                    <td class="align-middle">Make payment to Bluedart</td>
-                                    <td class="align-middle">
-                                        <h6 class="mb-0"><span class="badge bg-success">Low priority</span></h6>
-                                    </td>
-                                    <td class="align-middle">
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Done">
-                                            <i class="fas fa-check fa-lg text-success me-3"></i>
-                                        </a>
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Remove">
-                                            <i class="fas fa-trash-alt fa-lg text-warning"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr class="fw-normal">
-                                    <th>
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp"
-                                             alt="avatar 1" style="width: 45px; height: auto;">
-                                        <span class="ms-2">Danny McChain</span>
-                                    </th>
-                                    <td class="align-middle">Office rent</td>
-                                    <td class="align-middle">
-                                        <h6 class="mb-0"><span class="badge bg-warning">Middle priority</span></h6>
-                                    </td>
-                                    <td class="align-middle">
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Done">
-                                            <i class="fas fa-check fa-lg text-success me-3"></i>
-                                        </a>
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Remove">
-                                            <i class="fas fa-trash-alt fa-lg text-warning"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr class="fw-normal">
-                                    <th>
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava5-bg.webp"
-                                             alt="avatar 1" style="width: 45px; height: auto;">
-                                        <span class="ms-2">Alexa Chung</span>
-                                    </th>
-                                    <td class="align-middle">Office grocery shopping</td>
-                                    <td class="align-middle">
-                                        <h6 class="mb-0"><span class="badge bg-danger">High priority</span></h6>
-                                    </td>
-                                    <td class="align-middle">
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Done">
-                                            <i class="fas fa-check fa-lg text-success me-3"></i>
-                                        </a>
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Remove">
-                                            <i class="fas fa-trash-alt fa-lg text-warning"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr class="fw-normal">
-                                    <th class="border-0">
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava6-bg.webp"
-                                             alt="avatar 1" style="width: 45px; height: auto;">
-                                        <span class="ms-2">Ben Smith</span>
-                                    </th>
-                                    <td class="border-0 align-middle">Ask for Lunch to Clients</td>
-                                    <td class="border-0 align-middle">
-                                        <h6 class="mb-0"><span class="badge bg-success">Low priority</span></h6>
-                                    </td>
-                                    <td class="border-0 align-middle">
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Done">
-                                            <i class="fas fa-check fa-lg text-success me-3"></i>
-                                        </a>
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Remove">
-                                            <i class="fas fa-trash-alt fa-lg text-warning"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                @if (Model.Any())
+                                {
+                                    int i = 1;
+                                    foreach (var item in Model)
+                                    {
+                                        <tr class="fw-normal">
+                                            <th>
+                                                <span class="ms-2">@i</span>
+                                            </th>
+                                            <td class="align-middle">
+                                                <span>@item.Title</span>
+                                            </td>
+                                            <td class="align-middle">
+                                                @if(item.PriorityLevel == TodoPriorityEnum.Low.ToString())
+                                                <h6 class="mb-0"><span class="badge bg-danger">High priority</span></h6>
+                                            </td>
+                                            <td class="align-middle">
+                                                <a href="#!" data-mdb-toggle="tooltip" title="Done">
+                                                    <i class="fas fa-check fa-lg text-success me-3"></i>
+                                                </a>
+                                                <a href="#!" data-mdb-toggle="tooltip" title="Remove">
+                                                    <i class="fas fa-trash-alt fa-lg text-warning"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                    i++;
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6">No Records Found</td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
 

@@ -1,0 +1,57 @@
+﻿@model TodoViewModel
+@{
+    ViewData["Title"] = "Add Todo";
+}
+
+
+<div class="container">
+
+    <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-lg-8">
+                    <div class="p-5">
+                        <div class="text-center">
+                            <h1 class="h4 text-gray-900 mb-4">@ViewData["Title"]</h1>
+                        </div>
+                       
+                        <form method="post" asp-action="Create">
+                            <div class="form-group ">
+                                <label>Title *</label>
+                                @Html.TextBoxFor(a=>a.Title,new{@class="form-control form-control-user required",placeholder="Title"})
+                                @Html.ValidationMessageFor(a=>a.Title,"",new{@class="text-danger"})
+                            </div>
+
+                            <div class="form-group">
+                                <label>Priority Level</label>
+                                @Html.DropDownListFor(a => a.PriorityLevel, (SelectList)ViewContext.Controller.ViewBag.TodoPriorityLevel, new { htmlAttributes = new { @class = "form-control form-control-user" } })
+                                @Html.ValidationMessageFor(model => model.PriorityLevel, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label  class="control-label">Due Date</label>
+                                <input asp-for="DueDate" type="date" class="form-control form-control-user" />
+                                <span asp-validation-for="DueDate" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                @Html.TextAreaFor(a=>a.Description,new{@class="form-control form-control-user required",placeholder="Description"})
+                                @Html.ValidationMessageFor(a=>a.Description,"",new{@class="text-danger"})
+                            </div>
+
+                          
+                            <button type="submit" class="btn btn-primary">
+                                create
+                            </button>
+
+                        </form>
+                        <hr>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
