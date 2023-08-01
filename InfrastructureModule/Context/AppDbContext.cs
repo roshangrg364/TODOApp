@@ -21,6 +21,8 @@ namespace InfrastructureModule.Context
         {
             base.OnModelCreating(builder);
             builder.ApplyConfiguration(new UserEntityMapping());
+            builder.ApplyConfiguration(new TodoEntityMapping());
+            builder.ApplyConfiguration(new SharedTodoMapping());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,7 +30,7 @@ namespace InfrastructureModule.Context
             var conString = _configuration.GetConnectionString("DefaultConnection");
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(conString, a => a.MigrationsAssembly("PermissionBasedAuthorization"));
+                optionsBuilder.UseLazyLoadingProxies().UseSqlServer(conString, a => a.MigrationsAssembly("PermissionBasedAuthorization"));
             }
         }
     }

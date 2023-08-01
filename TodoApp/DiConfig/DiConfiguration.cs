@@ -22,12 +22,16 @@ namespace TodoApp.DiConfig
         {
          services.AddScoped<UserRepositoryInterface,UserRepository>();
          services.AddScoped<RoleRepositoryInterface,RoleRepository>();
+         services.AddScoped<TodoRepositoryInterface,TodoRepository>();
+         services.AddScoped<SharedTodoRepositoryInterface,SharedTodoRepository>();
         }
         private static void UseService(IServiceCollection services)
         {
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<UserServiceInterface, UserService>();
             services.AddScoped<RoleServiceInterface, RoleService>();
+            services.AddScoped<TodoServiceInterface, TodoService>();
+            services.AddScoped<SharedTodoServiceInterface, SharedTodoService>();
         }
     }
 }

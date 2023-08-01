@@ -16,6 +16,7 @@ namespace InfrastructureModule.Mapping
             builder.Property(a => a.CreatedOn).IsRequired();
             builder.Property(a => a.Status).HasMaxLength(100).IsRequired();
             builder.Property(a => a.Type).HasMaxLength(100).IsRequired();
+            builder.HasMany(a => a.Todos).WithOne(a=>a.CreatedByUser).HasForeignKey(a=>a.CreatedBy);
             builder.ToTable("AspNetUsers");
 
         }
