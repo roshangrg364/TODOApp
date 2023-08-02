@@ -16,9 +16,8 @@ namespace InfrastructureModule.Mapping
             builder.HasKey(a => a.Id);
             builder.Property<int>(a => a.TodoId).IsRequired();
             builder.Property<string>(a => a.UserId).IsRequired();
-            builder.Property<string?>(a => a.Description);
-            builder.HasOne(a=>a.Todo).WithMany().HasForeignKey(a=>a.TodoId).OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(a=>a.User).WithMany().HasForeignKey(a=>a.UserId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(a => a.Todo).WithMany(a => a.SharedTodos).HasForeignKey(a => a.TodoId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(a => a.User).WithMany().HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

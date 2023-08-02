@@ -9,11 +9,14 @@ namespace DomainModule.ServiceInterface
 {
     public interface TodoServiceInterface
     {
-        Task Create(TodoCreateDto dto);
+        Task<int> Create(TodoCreateDto dto);
         Task Update(TodoEditDto dto);
         Task Delete(int todoId);
-        Task<List<TodoDto>> GetAllTodosOfUser(string userId);
-        Task MarkAsComplete(int todoId,string userId);
+        Task<List<TodoDto>> GetAllTodosOfUser(TodoFilterDto filter);
+        Task<TodoDetailsDto> MarkAsComplete(TodoHistoryCreateDto dto);
         Task<TodoResponseDto> GetById(int todoId);
+        Task<TodoDetailsDto> GetTodoDetails(int todoId);
+        Task<TodoDetailsDto> CommentOnTodo(TodoHistoryCreateDto dto);
+
     }
 }

@@ -10,7 +10,7 @@ namespace DomainModule.ServiceInterface
     public interface SharedTodoServiceInterface
     {
         Task Create(SharedTodoCreateDto dto);
-        Task<SharedTodoOfTodo> GetSharedTodosListOfTodo(int todoId);
-        Task<List<SharedTodoDto>> GetAllTodosSharedToCurrentUser(string currentUserId);
+        Task<List<SharedTodoDto>> GetAllTodosSharedToCurrentUser(SharedTodoFilterDto dto);
+       
     }
 }

@@ -18,10 +18,9 @@ namespace DomainModule.Entity
             User = user;
         }
         public int Id { get;protected set; }
-        public int TodoId { get; set; }
+        public int TodoId { get;protected set; }
         public virtual TodoEntity Todo { get;protected set; }
-        public string UserId { get; set; }
-        public virtual User User { get; set; }
-        public string? Description { get; set; }
+        public string UserId { get;protected set; }
+        public virtual User User { get; protected set; }
     }
 }

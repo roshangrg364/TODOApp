@@ -10,6 +10,7 @@ using TodoApp.CustomTokenProvider;
 using TodoApp.DefaultDataSeeder;
 using TodoApp.DiConfig;
 using TodoApp.Extensions;
+using TodoApp.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,6 +74,7 @@ builder.Services.Configure<CookiePolicyOptions>(
                }
            );
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -90,6 +92,7 @@ app.UseRouting();
 app.UseCookiePolicy();
 app.UseAuthorization();
 
+
 app.MapControllerRoute(
     name: "MyArea",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
@@ -98,6 +101,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-DataSeeder.SeedUsersAndRolesAsync(app).Wait();
 
+DataSeeder.SeedUsersAndRolesAsync(app).Wait();
+app.MapHub<TodoHub>("/TodoHub");
 app.Run();

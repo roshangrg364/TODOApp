@@ -1,6 +1,6 @@
 ﻿@model UserEditViewModel
 @{
-    ViewData["Title"] = "User Profile";
+    ViewData["Title"] = "Edit User";
 }
 
 <div class="container">
@@ -44,14 +44,14 @@
                            
                             <div class="form-group">
                                 <label>Roles *</label>
-                                <label asp-for="Roles" class="control-label"></label>
+                             
                                 <select asp-for="Roles" class="form-control" asp-items="ViewBag.RoleList" multiple></select>
                                 @Html.ValidationMessageFor(a=>a.Roles,"",new{@class="text-danger"})
 
                             </div>
 
                             <button type="submit" class="btn btn-primary">
-                                Update Profile
+                                Update 
                             </button>
 
                         </form>

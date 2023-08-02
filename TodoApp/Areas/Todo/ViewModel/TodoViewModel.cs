@@ -17,4 +17,10 @@ namespace TodoApp.ViewModel
     {
         public int Id { get; set; }
     }
+
+    public class TodoHistoryCreateViewModel {
+        public int TodoId { get; set; }
+        public string Comment { get; set; }
+    }
+
 }

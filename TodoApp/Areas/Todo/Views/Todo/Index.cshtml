@@ -1,11 +1,12 @@
-﻿@model List<TodoIndexViewModel>
+﻿@model TodoIndexViewModel
 @{
-
+    ViewData["Title"] = "Todo List";
 }
 @using DomainModule.Enums
+@using DomainModule.Entity
 <section class="vh-100 gradient-custom-2">
     <div class="container  ">
-        <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="row ">
             <div class="col-md-12 col-xl-12">
 
                 <div class="card mask-custom">
@@ -13,67 +14,50 @@
 
                         <div class="text-center">
 
-                            <h4 class="my-4">Todo List</h4>
+                            <h4 class="my-4">@ViewData["Title"] </h4>
                         </div>
                         <div class="col-md-12">
                             <div class="col-md-2 form-group">
-                                <a asp-area="Todo" asp-controller="Todo" asp-action="Create" data-mdb-toggle="tooltip" title="Add new">
-                                    <i class="fas fa-plus fa-lg text-info"></i> Add
-                                </a>
+                                <a asp-area="Todo" asp-controller="Todo" asp-action="Create"><i class="fa fa-plus fa-lg"></i> Add</a>
                             </div>
-
-
                         </div>
-                        <table class="table  mb-0">
-                            <thead>
-                                <tr>
-                                    <th scope="col">S.No</th>
-                                    <th scope="col">Title</th>
-                                    <th scope="col">Priority</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Due Date</th>
-                                    <th scope="col">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.Any())
-                                {
-                                    int i = 1;
-                                    foreach (var item in Model)
-                                    {
-                                        <tr class="fw-normal">
-                                            <th>
-                                                <span class="ms-2">@i</span>
-                                            </th>
-                                            <td class="align-middle">
-                                                <span>@item.Title</span>
-                                            </td>
-                                            <td class="align-middle">
-                                                @if(item.PriorityLevel == TodoPriorityEnum.Low.ToString())
-                                                <h6 class="mb-0"><span class="badge bg-danger">High priority</span></h6>
-                                            </td>
-                                            <td class="align-middle">
-                                                <a href="#!" data-mdb-toggle="tooltip" title="Done">
-                                                    <i class="fas fa-check fa-lg text-success me-3"></i>
-                                                </a>
-                                                <a href="#!" data-mdb-toggle="tooltip" title="Remove">
-                                                    <i class="fas fa-trash-alt fa-lg text-warning"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                    i++;
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="6">No Records Found</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <form asp-area="Todo" asp-controller="Todo" asp-action="Index">
+                            <div class="d-flex justify-content-start col-md-12">
 
 
+                                <div class="col-md-2 form-group">
+                                    <label>From Date</label>
+                                    <input asp-for="FromDate" type="date" class="form-control form-control-user" />
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>To Date</label>
+                                    <input asp-for="ToDate" type="date" class="form-control form-control-user" />
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>Priority Level</label>
+                                    @Html.DropDownListFor(a => a.PriorityLevel, (SelectList)ViewBag.TodoPriorityLevel,"--All--", new { @class = "form-control form-control-user  " })
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>Status</label>
+                                    <select class="form-control form-control-user">
+                                        <option>--All--</option>
+                                        <option value="@TodoEntity.StatusActive">@TodoEntity.StatusActive</option>
+                                        <option value="@TodoEntity.StatusCompleted">@TodoEntity.StatusCompleted</option>
+
+                                    </select>
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>Title</label>
+                                    @Html.TextBoxFor(a=>a.Title,"",new{@class="form-control form-control-user"})
+                                </div>
+
+                                <div class="col-md-2 form-group mt-4">
+                                    <button type="submit" class="btn btn-primary form-control">Filter</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        @await Html.PartialAsync("~/Areas/Todo/Views/Todo/_TodoListView.cshtml", Model.Todos)
                     </div>
                 </div>
 

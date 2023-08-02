@@ -1,0 +1,311 @@
+﻿@model ToDoDetailsViewModel
+@{
+}
+@using DomainModule.Entity
+<style>
+    body {
+        margin-top: 20px;
+        background: #eee;
+    }
+    /* PROJECTS */
+
+    .project-title a {
+        font-size: 14px;
+        color: #676a6c;
+        font-weight: 600;
+    }
+
+    .project-list table tr td {
+        border-top: none;
+        border-bottom: 1px solid #e7eaec;
+        padding: 15px 10px;
+        vertical-align: middle;
+    }
+
+    .project-manager .tag-list li a {
+        font-size: 10px;
+        background-color: white;
+        padding: 5px 12px;
+        color: inherit;
+        border-radius: 2px;
+        border: 1px solid #e7eaec;
+        margin-right: 5px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .project-files li a {
+        font-size: 11px;
+        color: #676a6c;
+        margin-left: 10px;
+        line-height: 22px;
+    }
+
+    /* PROFILE */
+    .profile-content {
+        border-top: none !important;
+    }
+
+    .profile-stats {
+        margin-right: 10px;
+    }
+
+    .profile-image {
+        width: 120px;
+        float: left;
+    }
+
+        .profile-image img {
+            width: 96px;
+            height: 96px;
+        }
+
+    .profile-info {
+        margin-left: 120px;
+    }
+
+    .feed-activity-list .feed-element {
+        border-bottom: 1px solid #e7eaec;
+    }
+
+    .feed-element:first-child {
+        margin-top: 0;
+    }
+
+    .feed-element {
+        padding-bottom: 15px;
+    }
+
+        .feed-element,
+        .feed-element .media {
+            margin-top: 15px;
+        }
+
+    .feed-element,
+    .media-body {
+        overflow: hidden;
+    }
+
+        .feed-element > .pull-left {
+            margin-right: 10px;
+        }
+
+        .feed-element img.img-circle,
+        .dropdown-messages-box img.img-circle {
+            width: 38px;
+            height: 38px;
+        }
+
+        .feed-element .well {
+            border: 1px solid #e7eaec;
+            box-shadow: none;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            padding: 10px 20px;
+            font-size: 14px;
+            line-height: 16px;
+        }
+
+        .feed-element .actions {
+            margin-top: 10px;
+        }
+
+        .feed-element .photos {
+            margin: 10px 0;
+        }
+
+    .feed-photo {
+        max-height: 180px;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .file-list li {
+        padding: 5px 10px;
+        font-size: 11px;
+        border-radius: 2px;
+        border: 1px solid #e7eaec;
+        margin-bottom: 5px;
+    }
+
+        .file-list li a {
+            color: inherit;
+        }
+
+            .file-list li a:hover {
+                color: #1ab394;
+            }
+
+    .user-friends img {
+        width: 42px;
+        height: 42px;
+        margin-bottom: 5px;
+        margin-right: 5px;
+    }
+
+    .ibox {
+        clear: both;
+        margin-bottom: 25px;
+        margin-top: 0;
+        padding: 0;
+    }
+
+        .ibox.collapsed .ibox-content {
+            display: none;
+        }
+
+        .ibox.collapsed .fa.fa-chevron-up:before {
+            content: "\f078";
+        }
+
+        .ibox.collapsed .fa.fa-chevron-down:before {
+            content: "\f077";
+        }
+
+        .ibox:after,
+        .ibox:before {
+            display: table;
+        }
+
+    .ibox-title {
+        -moz-border-bottom-colors: none;
+        -moz-border-left-colors: none;
+        -moz-border-right-colors: none;
+        -moz-border-top-colors: none;
+        background-color: #ffffff;
+        border-color: #e7eaec;
+        border-image: none;
+        border-style: solid solid none;
+        border-width: 3px 0 0;
+        color: inherit;
+        margin-bottom: 0;
+        padding: 14px 15px 7px;
+        min-height: 48px;
+    }
+
+    .ibox-content {
+        background-color: #ffffff;
+        color: inherit;
+        padding: 15px 20px 20px 20px;
+        border-color: #e7eaec;
+        border-image: none;
+        border-style: solid solid none;
+        border-width: 1px 0;
+    }
+
+    .ibox-footer {
+        color: inherit;
+        border-top: 1px solid #e7eaec;
+        font-size: 90%;
+        background: #ffffff;
+        padding: 10px 15px;
+    }
+
+    ul.notes li,
+    ul.tag-list li {
+        list-style: none;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="wrapper wrapper-content animated fadeInUp">
+                <div class="ibox">
+                    <div class="ibox-content">
+                        <div id="main-content">
+                            @await Html.PartialAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", Model)
+                        </div>
+                        @if (Model.Status == TodoEntity.StatusActive)
+                        {
+                            <div class="commentDiv">
+                                <div class="col-md-12 mt-2 ">
+                                    <h4>Comment</h4>
+                                    @Html.HiddenFor(a=>a.Id)
+                                    @Html.TextArea("Comment","",new{@class="form-control form-control-user"})
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="form-group col-md-2">
+                                        <button class="btn btn-info mark-as-complete form-control">Close Todo</button>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <button class="btn btn-info comment-on-todo form-control">Comment</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).on("click", ".comment-on-todo", function () {
+            debugger;
+            const todoId = $("#Id").val();
+            const comment = $("#Comment").val();
+            const data = {
+                TodoId: todoId,
+                Comment: comment
+            };
+            blockwindow()
+            $.ajax({
+                url: "/api/todo/comment",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (data) {
+                    if (data.IsSuccess == true) {
+                        $("#main-content").html(data.Data)
+
+                    }
+                    else {
+                        console.log(data)
+                    }
+                    unblockwindow();
+                },
+                error: function (response) {
+                    console.log(response)
+                    unblockwindow();
+                }
+            })
+        })
+
+        $(document).on("click", ".mark-as-complete", function () {
+            const todoId = $("#Id").val();
+            const comment = $("#Comment").val();
+            const data = {
+                TodoId: todoId,
+                Comment: comment
+            };
+            blockwindow()
+            $.ajax({
+                url: "/api/todo/complete",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (data) {
+                    if (data.IsSuccess == true) {
+                        $("#main-content").html(data.Data)
+                        document.querySelector(".commentDiv").classList.add("hidden")
+                    }
+                    else {
+                        console.log(data)
+                    }
+                    unblockwindow();
+                },
+                error: function (response) {
+                    console.log(response)
+                    unblockwindow();
+                }
+            })
+        })
+
+    </script>
+
+   }

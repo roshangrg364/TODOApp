@@ -21,6 +21,8 @@ namespace DomainModule.Entity
             CreatedOn = DateTime.Now;
             CreatedByUser = createdBy;
             DueDate = dueDate;
+            Status = StatusActive;
+           
         }
 
         public void Update(string title,int priorityLevel,DateTime dueDate)
@@ -28,6 +30,7 @@ namespace DomainModule.Entity
             Title = Title;
             PriorityLevel = priorityLevel;
             DueDate = dueDate;
+            ModifiedOn = DateTime.Now;
         }
 
         public int Id { get; protected set; }
@@ -35,6 +38,7 @@ namespace DomainModule.Entity
         public string Status { get; protected set; }
         public int PriorityLevel { get; protected set; }
         public DateTime CreatedOn { get;protected set; }
+        public DateTime? ModifiedOn { get;protected set; }
         public DateTime? CompletedOn { get;protected set; }
         public DateTime DueDate { get; set; }
         public string? Description { get; set; }
@@ -43,6 +47,7 @@ namespace DomainModule.Entity
         public virtual User CreatedByUser { get; set; }
         public virtual User? CompletedByUser { get; set; }
         public virtual IList<SharedTodoEntity> SharedTodos { get; set; } = new List<SharedTodoEntity>();
+        public virtual IList<TodoHistory> SharedTodoHistory { get; set; } = new List<TodoHistory>();
         public bool IsActive => Status == StatusActive;
         public bool IsCompleted => Status == StatusCompleted;
         public void MarkAsComplete(User completedBy)

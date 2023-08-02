@@ -1,0 +1,90 @@
+﻿@model List<TodoViewModel>
+@{
+    Layout = null;
+}
+@using DomainModule.Enums
+@using DomainModule.Entity
+<table class="table  mb-0">
+    <thead>
+        <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">Title</th>
+            <th scope="col">Priority</th>
+            <th scope="col">Due Date</th>
+            <th scope="col">Status</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            int i = 1;
+            foreach (var item in Model)
+            {
+                <tr class="fw-normal">
+                    <th>
+                        <span class="ms-2">@i</span>
+                    </th>
+                    <td class="align-middle">
+                        <span>@item.Title</span>
+                    </td>
+                    <td class="align-middle">
+                        @if (item.PriorityLevel == TodoPriorityEnum.Low.ToString())
+                        {
+                            <h6 class="mb-0"><span class="badge bg-success text-white">Low</span></h6>
+                        }
+                        else if (item.PriorityLevel == TodoPriorityEnum.Medium.ToString())
+                        {
+                            <h6 class="mb-0"><span class="badge bg-warning text-white">Medium</span></h6>
+                        }
+                        else
+                        {
+                            <h6 class="mb-0"><span class="badge bg-danger text-white">High</span></h6>
+                        }
+                    </td>
+                    <td>
+                        <span>@item.DueDate.ToString("yyyy-MM-dd")</span>
+                    </td>
+                    <td>@item.Status</td>
+                    <td class="align-middle">
+
+                        <a asp-area="Todo" asp-controller="Todo" asp-action="ViewDetail" asp-route-todoId="@item.Id" data-mdb-toggle="tooltip" title="View Detail">
+                            <i class="fas fa-eye fa-lg text-secondary me-3"></i>
+                        </a> |
+
+                        @if (item.Status == TodoEntity.StatusActive)
+                        {
+                            <span>
+                                <a asp-area="Todo" asp-controller="Todo" asp-action="Update" asp-route-todoId="@item.Id" data-mdb-toggle="tooltip" title="Edit">
+                                    <i class="fas fa-edit fa-lg text-info me-3"></i>
+                                </a> |
+                                <a asp-area="Todo" asp-controller="Todo" asp-action="Delete" asp-route-todoId="@item.Id" data-mdb-toggle="tooltip" title="Remove">
+                                    <i class="fas fa-trash-alt fa-lg text-danger"></i>
+                                </a> |
+                                <a asp-area="Todo" asp-controller="Todo" asp-action="MarkAsCompleted" asp-route-todoId="@item.Id" data-mdb-toggle="tooltip" title="Complete Todo">
+                                    <i class="fas fa-check fa-lg text-success"></i>
+                                </a> |
+                                @if (item.IsTodoCreator)
+                                {
+                                <a asp-area="Todo" asp-controller="Todo" asp-action="ShareTodo" asp-route-todoId="@item.Id" data-mdb-toggle="tooltip" title="Share Todo">
+                                    <i class="fas fa-share fa-lg text-success"></i>
+                                </a>
+                                }
+                            </span>
+                        }
+
+                    </td>
+                </tr>
+            }
+            i++;
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">No Records Found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

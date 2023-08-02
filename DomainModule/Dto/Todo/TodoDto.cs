@@ -17,6 +17,7 @@ namespace DomainModule.Dto
         public DateTime DueDate { get; set; }
         public string? Description { get; set; }
         public string CreatedByUser { get; set; }
+        public string CreatedBy { get; set; }
         public string? CompletedByUser { get; set; }
 
     }
@@ -27,6 +28,8 @@ namespace DomainModule.Dto
         public int PriorityLevel { get; set; }
         public DateTime DueDate { get; set; }
         public string? Description { get; set; }
+        public string? CreatedBy { get; set; }
+        public string CreatedOn { get; set; }
     }
     public class TodoCreateDto
     {
@@ -60,4 +63,31 @@ namespace DomainModule.Dto
         public DateTime DueDate { get; set; }
         public string? Description { get; set; }
     }
+
+    public class TodoDetailsDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string CreatedBy { get; set; }
+        public string? Description { get; set; }
+        public string PriorityLevel { get; set; }
+        public string Status { get; set; }
+        public DateTime DueDate { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
+        public DateTime? CompletedOn { get; set; }
+        public string CompletedBy { get; set; }
+        public List<TodoHistoryDto> SharedTodoHistory { get; set; } = new List<TodoHistoryDto>();
+    }
+
+    public class TodoFilterDto
+    {
+        public string? Title { get; set; }
+        public string? Status { get; set; }
+        public string CurrentUserId { get; set; }
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+        public int? PriorityLevel { get; set; }
+    }
+
 }

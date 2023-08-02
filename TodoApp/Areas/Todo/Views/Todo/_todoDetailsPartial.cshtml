@@ -1,0 +1,97 @@
+﻿@model ToDoDetailsViewModel
+@{
+    Layout = null;
+}
+@using DomainModule.Entity
+<div class="row">
+    <div class="col-lg-12">
+        <div class="m-b-md">
+
+            <h2>Todo Details</h2>
+        </div>
+        <dl class="dl-horizontal">
+            <dt>Status:</dt>
+
+            <dd><span class="badge badge-success">@Model.Status</span></dd>
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-5">
+        <dl class="dl-horizontal">
+
+            <dt>Title:</dt>
+            <dd>@Model.Title</dd>
+            <dt>Created by:</dt>
+            <dd>@Model.CreatedBy</dd>
+            <dt>Created On:</dt>
+            <dd>@Model.CreatedOn.ToString("yyyy-MM-dd") </dd>
+
+        </dl>
+    </div>
+    <div class="col-lg-7" id="cluster_info">
+        <dl class="dl-horizontal">
+
+            <dt>Last Updated:</dt>
+            <dd>@(Model.ModifiedOn.HasValue ? Model.ModifiedOn.Value.ToString("yyyy-MM-dd") : "-----")</dd>
+            <dt>Completed By:</dt>
+            <dd>@(!string.IsNullOrEmpty(Model.CompletedBy) ? Model.CompletedBy : "-----")</dd>
+
+            <dt>Completed On:</dt>
+            <dd>@(Model.CompletedOn.HasValue ? Model.CompletedOn.Value.ToString("yyyy-MM-dd") : "-----")</dd>
+
+        </dl>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <dl class="dl-horizontal">
+            <dt>Description:</dt>
+            <dd>
+                @Model.Description
+            </dd>
+        </dl>
+
+    </div>
+</div>
+<div class="row m-t-sm">
+    <div class="col-lg-12">
+        <div class="panel blank-panel">
+            <div class="panel-heading">
+                <div class="panel-options">
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <h4>History</h4>
+                <div class="feed-activity-list">
+                    @if (Model.SharedTodoHistory.Any())
+                    {
+                        foreach (var history in Model.SharedTodoHistory)
+                        {
+                            <div class="feed-element">
+                               
+                                <div class="media-body ">
+                                    <small class="pull-right"> Created On: @history.CreatedOn.ToString("yyyy-MM-dd")</small><br>
+                                      <strong>Todo @history.Status by @history.CommentedBy</strong>
+                                        <br />
+                                   
+
+                                    <small class="text-muted">Due Date : @Model.DueDate.ToString("yyyy-MM-dd")</small>
+                                    <div>
+                                      comment:  @Html.Raw(history.Comment)
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                    }
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>

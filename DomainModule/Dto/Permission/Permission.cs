@@ -28,7 +28,11 @@ namespace DomainModule.Dto
                     {
                         "View",
                         "Create",
-                        "Update"
+                        "Update",
+                        "ViewPermission",
+                        "AssignPermission",
+                        "UnAssignPermission",
+                       
                     }
                 }
         };

@@ -39,7 +39,7 @@ namespace TodoApp.Areas.Account.Controllers
             _roleManager = roleManager;
             _userManager = userManager;
         }
-
+        [Authorize(Policy ="User-View")]
         public async Task<IActionResult> Index()
         {
             var users = await _userRepo.GetQueryable().Where(a => a.Type != DomainModule.Entity.User.TypeSuperAdmin).ToListAsync().ConfigureAwait(true);
@@ -62,13 +62,14 @@ namespace TodoApp.Areas.Account.Controllers
             }
             return View(userIndexViewModels);
         }
-
+        [Authorize(Policy = "User-Create")]
         public async Task<IActionResult> Create()
         {
             var roles = await _roleManager.Roles.Where(a => a.Name != "SuperAdmin").ToListAsync();
             ViewBag.RoleList = new SelectList(roles, "Id", "Name");
             return View();
         }
+        [Authorize(Policy = "User-Create")]
         [HttpPost]
         public async Task<IActionResult> Create(UserViewModel model)
         {
@@ -99,7 +100,7 @@ namespace TodoApp.Areas.Account.Controllers
             ViewBag.RoleList = new SelectList(roles, "Id", "Name");
             return View(model);
         }
-
+        [Authorize(Policy = "User-Update")]
         public async Task<IActionResult> Edit(string id)
         {
             try
@@ -129,6 +130,7 @@ namespace TodoApp.Areas.Account.Controllers
             }
         }
 
+        [Authorize(Policy = "User-Update")]
         [HttpPost]
         public async Task<IActionResult> Edit(UserEditViewModel model)
         {
@@ -159,10 +161,65 @@ namespace TodoApp.Areas.Account.Controllers
         }
         public async Task<IActionResult> UserProfile()
         {
-            var userId = this.GetCurrentUserId();
-            return RedirectToAction(nameof(Edit), new { id = userId });
+          
+            try
+            {
+                var userId = this.GetCurrentUserId();
+                var roles = await _roleManager.Roles.Where(a => a.Name != "SuperAdmin").ToListAsync();
+                ViewBag.RoleList = new SelectList(roles, "Id", "Name");
+                var user = await _userManager.FindByIdAsync(userId).ConfigureAwait(true) ?? throw new UserNotFoundException();
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var allRoles = await _roleManager.Roles.Where(a => userRoles.Contains(a.Name)).ToListAsync().ConfigureAwait(true);
+
+                var userUpdateModel = new UserEditViewModel()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    UserName = user.UserName,
+                    EmailAddress = user.Email,
+                    MobileNumber = user.PhoneNumber,
+                    Roles = allRoles.Select(a => a.Id).ToList(),
+
+                };
+                return View(userUpdateModel);
+            }
+            catch (Exception ex)
+            {
+                _notify.AddErrorToastMessage(ex.Message);
+                return RedirectToAction("Index", "Home", new { area = "" });
+            }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(UserEditViewModel model)
+        {
+            try
+            {
+                var editDto = new UserEditDto()
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    EmailAddress = model.EmailAddress,
+                    MobileNumber = model.MobileNumber,
+                    UserName = model.UserName,
+                    Roles = model.Roles
+                };
+                await _userService.Edit(editDto);
+
+                _notify.AddSuccessToastMessage("Updated Successfully.");
+                return RedirectToAction("Index","Home");
+            }
+            catch (Exception ex)
+            {
+                _notify.AddErrorToastMessage(ex.Message);
+
+            }
+            var roles = await _roleManager.Roles.Where(a => a.Name != "SuperAdmin").ToListAsync();
+            ViewBag.RoleList = new SelectList(roles, "Id", "Name");
+            return View(model);
+        }
+
+        [Authorize(Policy = "User-Unlock")]
         public async Task<IActionResult> Activate(string id)
         {
             try
@@ -179,7 +236,7 @@ namespace TodoApp.Areas.Account.Controllers
             }
 
         }
-
+        [Authorize(Policy = "User-Lock")]
         public async Task<IActionResult> Deactivate(string id)
         {
             try

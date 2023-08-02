@@ -58,12 +58,14 @@ namespace TodoApp.Areas.Account.Controllers
             }
             return View(roleIndexViewModels);
         }
-
-        public async Task<IActionResult> Create()
+        [Authorize(Policy = "Role-Create")]
+        public IActionResult Create()
         {
             return View();
         }
 
+
+        [Authorize(Policy = "Role-Create")]
         [HttpPost]
         public async Task<IActionResult> Create(ViewModel.RoleViewModel model)
         {
@@ -80,7 +82,7 @@ namespace TodoApp.Areas.Account.Controllers
             }
             return View(model);
         }
-
+        [Authorize(Policy = "Role-Edit")]
         public async Task<IActionResult> Edit(string id)
         {
             var role = await _roleManager.FindByIdAsync(id).ConfigureAwait(true) ?? throw new RoleNotFoundException();
@@ -91,6 +93,7 @@ namespace TodoApp.Areas.Account.Controllers
             };
             return View(roleEditViewModel);
         }
+        [Authorize(Policy = "Role-Edit")]
         [HttpPost]
         public async Task<IActionResult> Edit(RoleEditViewModel model)
         {

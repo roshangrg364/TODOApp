@@ -1,13 +1,16 @@
 ﻿using DomainModule.Dto;
+using DomainModule.Entity;
 using DomainModule.Enums;
 using DomainModule.RepositoryInterface;
 using DomainModule.ServiceInterface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
+using NToastNotify;
 using System.Data;
-using System.Runtime.InteropServices;
 using TodoApp.Areas.Todo.ViewModel;
 using TodoApp.Extensions;
+using TodoApp.SignalR;
 using TodoApp.ViewModel;
 
 namespace TodoApp.Areas.Todo.Controllers
@@ -17,21 +20,30 @@ namespace TodoApp.Areas.Todo.Controllers
     {
         private readonly ILogger<TodoController> _logger;
         private readonly TodoServiceInterface _todoService;
+        private readonly SharedTodoServiceInterface _sharedTodoService;
+        private readonly IToastNotification _notify;
 
+        private readonly IHubContext<TodoHub> _hub;
         public TodoController(ILogger<TodoController> logger,
-            TodoServiceInterface todoService)
+            TodoServiceInterface todoService, IToastNotification notify,
+            SharedTodoServiceInterface sharedTodoService,
+            IHubContext<TodoHub> hub)
         {
             _logger = logger;
             _todoService = todoService;
+            _notify = notify;
+            _sharedTodoService = sharedTodoService;
+            _hub = hub;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(TodoIndexViewModel model)
         {
-            var currentUSer = this.GetCurrentUserId();
-            var todolist = await _todoService.GetAllTodosOfUser(currentUSer).ConfigureAwait(true);
-            var todoIndexModel = new List<TodoIndexViewModel>();
+            var currentUSerId = this.GetCurrentUserId();
+            TodoFilterDto todoFilterModel = BindDataToTodoFilterDto(model, currentUSerId, model.Status);
+            var todolist = await _todoService.GetAllTodosOfUser(todoFilterModel).ConfigureAwait(true);
+            SetPriorityLevelViewBag();
             foreach (var todo in todolist)
             {
-                todoIndexModel.Add(new TodoIndexViewModel
+                model.Todos.Add(new TodoViewModel
                 {
                     Id = todo.Id,
                     Title=todo.Title,
@@ -42,13 +54,80 @@ namespace TodoApp.Areas.Todo.Controllers
                     CompletedByUser= todo.CompletedByUser,
                     CreatedByUser=todo.CreatedByUser,
                     CompletedOn=todo.CompletedOn,
-                    CreatedOn =todo.CreatedOn
+                    CreatedOn =todo.CreatedOn,
+                    IsTodoCreator = todo.CreatedBy == currentUSerId
                 });
             }
-            return View(todoIndexModel);
+            return View(model);
         }
 
-        public Task<IActionResult> Create()
+        public async Task<IActionResult> ActiveTodo(TodoIndexViewModel model)
+        {
+            var currentUSerId = this.GetCurrentUserId();
+            TodoFilterDto todoFilterModel = BindDataToTodoFilterDto(model, currentUSerId,TodoEntity.StatusActive);
+            var todolist = await _todoService.GetAllTodosOfUser(todoFilterModel).ConfigureAwait(true);
+            SetPriorityLevelViewBag();
+            foreach (var todo in todolist)
+            {
+                model.Todos.Add(new TodoViewModel
+                {
+                    Id = todo.Id,
+                    Title = todo.Title,
+                    PriorityLevel = todo.PriorityLevel,
+                    Description = todo.Description,
+                    DueDate = todo.DueDate,
+                    Status = todo.Status,
+                    CompletedByUser = todo.CompletedByUser,
+                    CreatedByUser = todo.CreatedByUser,
+                    CompletedOn = todo.CompletedOn,
+                    CreatedOn = todo.CreatedOn
+                });
+            }
+            return View(model);
+        }
+
+       
+        public async Task<IActionResult> CompletedTodo(TodoIndexViewModel model)
+        {
+            var currentUSerId = this.GetCurrentUserId();
+            TodoFilterDto todoFilterModel = BindDataToTodoFilterDto(model, currentUSerId, TodoEntity.StatusCompleted);
+
+            var todolist = await _todoService.GetAllTodosOfUser(todoFilterModel).ConfigureAwait(true);
+            SetPriorityLevelViewBag();
+            foreach (var todo in todolist)
+            {
+                model.Todos.Add(new TodoViewModel
+                {
+                    Id = todo.Id,
+                    Title = todo.Title,
+                    PriorityLevel = todo.PriorityLevel,
+                    Description = todo.Description,
+                    DueDate = todo.DueDate,
+                    Status = todo.Status,
+                    CompletedByUser = todo.CompletedByUser,
+                    CreatedByUser = todo.CreatedByUser,
+                    CompletedOn = todo.CompletedOn,
+                    CreatedOn = todo.CreatedOn
+                });
+            }
+            return View(model);
+        }
+
+
+        private static TodoFilterDto BindDataToTodoFilterDto(TodoIndexViewModel model, string currentUSerId, string status)
+        {
+            return new TodoFilterDto
+            {
+                CurrentUserId = currentUSerId,
+                FromDate = model.FromDate,
+                ToDate = model.ToDate,
+                PriorityLevel = model.PriorityLevel,
+                Status = status,
+                Title = model.Title
+            };
+        }
+
+        public IActionResult Create()
         {
             SetPriorityLevelViewBag();
             return View();
@@ -71,9 +150,9 @@ namespace TodoApp.Areas.Todo.Controllers
                     { 
                     Description = model.Description
                     };
-                    await _todoService.Create(todoCreateDto).ConfigureAwait(true);
+                   var todoId = await _todoService.Create(todoCreateDto).ConfigureAwait(true);
                     _notify.AddSuccessToastMessage("Todo Created Successfully");
-                    return RedirectToAction(nameof(Index));
+                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
@@ -81,6 +160,7 @@ namespace TodoApp.Areas.Todo.Controllers
                     string responseMessage = string.Join("</br>", validationErrors);
                     _notify.AddInfoToastMessage(responseMessage);
                 }
+
             }
             catch (Exception ex)
             {
@@ -92,7 +172,7 @@ namespace TodoApp.Areas.Todo.Controllers
         }
 
 
-        public async Task<IActionResult> Udpate(int todoId)
+        public async Task<IActionResult> Update(int todoId)
         {
             try
             {
@@ -146,7 +226,7 @@ namespace TodoApp.Areas.Todo.Controllers
             SetPriorityLevelViewBag();
             return View(model);
         }
-
+        
         public async Task<IActionResult> Delete(int todoId)
         {
             try
@@ -161,6 +241,93 @@ namespace TodoApp.Areas.Todo.Controllers
                 _notify.AddErrorToastMessage(ex.Message);
                 return RedirectToAction(nameof(Index));
             }
+        }
+
+       
+        public async Task<IActionResult> ViewDetail(int todoId)
+        {
+            try
+            {
+                var todDetails = await _todoService.GetTodoDetails(todoId).ConfigureAwait(true);
+                var todoDetailViewModel = new ToDoDetailsViewModel
+                {
+
+                    Id = todDetails.Id,
+                    Title = todDetails.Title,
+                    CreatedBy = todDetails.CreatedBy,
+                    Description = todDetails.Description,
+                    PriorityLevel = todDetails.PriorityLevel,
+                    DueDate = todDetails.DueDate,
+                    CreatedOn = todDetails.CreatedOn,
+                    CompletedBy = todDetails.CompletedBy,
+                    CompletedOn = todDetails.CompletedOn,
+                    ModifiedOn = todDetails.ModifiedOn,
+                    Status = todDetails.Status
+                };
+
+                foreach (var sharedTodo in todDetails.SharedTodoHistory)
+                {
+                    var sharedTodoModel = new TodoHistoryViewModel
+                    {
+                        Id = sharedTodo.Id,
+                        Comment = sharedTodo.Comment,
+                        CommentedBy = sharedTodo.CommentedBy,
+                        Status = sharedTodo.Status,
+                        CreatedOn = sharedTodo.CreatedOn
+                    };
+                    todoDetailViewModel.SharedTodoHistory.Add(sharedTodoModel);
+                }
+                return View(todoDetailViewModel);
+            }
+            catch (Exception ex)
+            {
+
+                _notify.AddErrorToastMessage(ex.Message);
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        public async Task<IActionResult> ShareTodo(int todoId)
+        {
+            try
+            {
+                var sharedToDoModel = new SharedTodoCreateViewModel
+                {
+                    TodoId = todoId,
+                };
+                return View(sharedToDoModel);
+            }
+            catch (Exception ex)
+            {
+                _notify.AddErrorToastMessage(ex.Message);
+                return RedirectToAction(nameof(Index));
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ShareTodo(SharedTodoCreateViewModel model)
+        {
+            try
+            {
+                if(ModelState.IsValid)
+                {
+                    var sharedTodoCreateDto = new SharedTodoCreateDto(model.Email, model.TodoId, model.Description,this.GetCurrentUserId());
+                    await _sharedTodoService.Create(sharedTodoCreateDto);
+                    _notify.AddSuccessToastMessage("Todo shared Successfully");
+                    await _hub.Clients.All.SendAsync("RefereshDashboard").ConfigureAwait(true);
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    var validationErrors = ModelState.SelectMany(error => error.Value.Errors.Select(message => message.ErrorMessage)).ToList();
+                    string responseMessage = string.Join("</br>", validationErrors);
+                    _notify.AddInfoToastMessage(responseMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                _notify.AddErrorToastMessage(ex.Message);   
+            }
+            return View(model);
         }
     }
 }

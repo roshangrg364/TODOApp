@@ -23,6 +23,7 @@ namespace InfrastructureModule.Context
             builder.ApplyConfiguration(new UserEntityMapping());
             builder.ApplyConfiguration(new TodoEntityMapping());
             builder.ApplyConfiguration(new SharedTodoMapping());
+            builder.ApplyConfiguration(new TodoHistoryMapping());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

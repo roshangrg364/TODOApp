@@ -24,6 +24,7 @@ namespace TodoApp.DiConfig
          services.AddScoped<RoleRepositoryInterface,RoleRepository>();
          services.AddScoped<TodoRepositoryInterface,TodoRepository>();
          services.AddScoped<SharedTodoRepositoryInterface,SharedTodoRepository>();
+         services.AddScoped<TodoHistoryRepositoryInterface,TodoHistoryRepository>();
         }
         private static void UseService(IServiceCollection services)
         {
@@ -32,6 +33,7 @@ namespace TodoApp.DiConfig
             services.AddScoped<RoleServiceInterface, RoleService>();
             services.AddScoped<TodoServiceInterface, TodoService>();
             services.AddScoped<SharedTodoServiceInterface, SharedTodoService>();
+            services.AddScoped<DashboardServiceInterface, DashboardService>();
         }
     }
 }

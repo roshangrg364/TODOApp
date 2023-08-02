@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TodoApp.Models;
 using TodoApp.ViewModel;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TodoApp.Areas.Account.Controllers
 {
@@ -16,6 +17,8 @@ namespace TodoApp.Areas.Account.Controllers
         {
             _roleService = roleService;
         }
+
+        [Authorize(Policy = "Role-ViewPermission")]
         public async Task<IActionResult> Index(string RoleId)
         {
             try
@@ -44,6 +47,8 @@ namespace TodoApp.Areas.Account.Controllers
             }
            
         }
+
+        [Authorize(Policy = "Role-ViewPermission")]
         public async Task<IActionResult> LoadPermissionView(string RoleId)
         {
             try
@@ -70,6 +75,8 @@ namespace TodoApp.Areas.Account.Controllers
                 return Json(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
             }
         }
+
+        [Authorize(Policy = "Role-AssignPermission")]
         [HttpPost]
         public async Task<IActionResult> AssignPermission(string roleId,string permission)
         {
@@ -83,6 +90,8 @@ namespace TodoApp.Areas.Account.Controllers
                 return Json(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
             }
         }
+
+        [Authorize(Policy = "Role-UnAssignPermission")]
         public async Task<IActionResult> UnAssignPermission(string roleId, string permission)
         {
             try
@@ -95,7 +104,7 @@ namespace TodoApp.Areas.Account.Controllers
                 return Json(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
             }
         }
-
+        [Authorize(Policy = "Role-AssignPermission")]
         public async Task<IActionResult> AssignAllPermissionOfModule(string roleId, string module)
         {
             try
@@ -108,6 +117,8 @@ namespace TodoApp.Areas.Account.Controllers
                 return Json(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
             }
         }
+
+        [Authorize(Policy = "Role-UnAssignPermission")]
         public async Task<IActionResult> UnAssignAllPermissionOfModule(string roleId, string module)
         {
             try

@@ -1,5 +1,6 @@
 ﻿using DomainModule.Dto;
 using DomainModule.Entity;
+using DomainModule.Enums;
 using DomainModule.Exceptions;
 using DomainModule.RepositoryInterface;
 using DomainModule.ServiceInterface;
@@ -15,18 +16,21 @@ namespace ServiceModule.Service
     public class SharedTodoService : SharedTodoServiceInterface
     {
         private readonly SharedTodoRepositoryInterface _sharedTodoRepo;
+        private readonly TodoHistoryRepositoryInterface _todoHistoryRepo;
         private readonly TodoRepositoryInterface _todoRepo;
         private readonly UserRepositoryInterface _userRepo;
         private readonly IUnitOfWork _unitOfWork;
         public SharedTodoService(SharedTodoRepositoryInterface sharedTodoRepo,
             TodoRepositoryInterface todoRepo,
             IUnitOfWork unitOfWork,
-            UserRepositoryInterface userRepo)
+            UserRepositoryInterface userRepo,
+            TodoHistoryRepositoryInterface todoHistoryRepo)
         {
             _sharedTodoRepo = sharedTodoRepo;
             _todoRepo = todoRepo;
             _unitOfWork = unitOfWork;
             _userRepo = userRepo;
+            _todoHistoryRepo = todoHistoryRepo;
         }
         public async Task Create(SharedTodoCreateDto dto)
         {
@@ -35,9 +39,12 @@ namespace ServiceModule.Service
                 try
                 {
                     var todo = await _todoRepo.GetById(dto.TodoId).ConfigureAwait(false) ?? throw new CustomException("Todo does not exists.");
-                    var user = await _userRepo.GetQueryable().Where(a => a.Email == dto.Email).FirstOrDefaultAsync().ConfigureAwait(false) ?? throw new CustomException("User not found");
-
+                    User user = await ValidateTodo(dto, todo).ConfigureAwait(false);
                     var sharedTodoEntity = new SharedTodoEntity(todo, user);
+                    var comment = $"Todo Shared By {todo.CreatedByUser.Name} to {user.Name} <br/> Comment: {dto.Description}";
+                    var sharedTodoHistory = AddSharedTodoHistory(todo, user, comment,TodoHistory.StatusShared);
+                    await _sharedTodoRepo.InsertAsync(sharedTodoEntity).ConfigureAwait(false);
+                    await _todoHistoryRepo.InsertAsync(sharedTodoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
 
@@ -50,55 +57,42 @@ namespace ServiceModule.Service
             }
         }
 
-        public async Task<SharedTodoOfTodo> GetSharedTodosListOfTodo(int todoId)
+        private TodoHistory AddSharedTodoHistory(TodoEntity todo, User user, string comment,string status)
         {
-            try
-            {
-                var todo = await _todoRepo.GetById(todoId).ConfigureAwait(false) ?? throw new CustomException("Todo not found");
-
-                var sharedTodoReturnModel = new SharedTodoOfTodo()
-                {
-                    Title = todo.Title,
-                    CreatedBy = todo.CreatedByUser.Name,
-                    Description = todo.Description
-                };
-               
-                foreach (var sharedTodo in todo.SharedTodos)
-                {
-                    var sharedTodoModel = new SharedTodoDto
-                    {
-                        Id = sharedTodo.Id,
-                        SharedTo = sharedTodo.User.Name,
-                        Description = sharedTodo.Description
-                    };
-                    sharedTodoReturnModel.SharedTodos.Add(sharedTodoModel);
-                }
-                return sharedTodoReturnModel;
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
+            var sharedTodoHistory = new TodoHistory(todo, todo.CreatedByUser,status, comment);
+            return sharedTodoHistory;
         }
 
-        public async Task<List<SharedTodoDto>> GetAllTodosSharedToCurrentUser(string currentUserId)
+        private async Task<User> ValidateTodo(SharedTodoCreateDto dto, TodoEntity todo)
+        {
+            if (todo.IsCompleted) throw new CustomException("Todo already completed");
+            var user = await _userRepo.GetQueryable().Where(a => a.Email == dto.Email).FirstOrDefaultAsync().ConfigureAwait(false) ?? throw new CustomException("User not found");
+            var isTodoAlreadyShared = await _sharedTodoRepo.GetQueryable().Where(a => a.UserId == user.Id && a.TodoId == dto.TodoId).FirstOrDefaultAsync().ConfigureAwait(false);
+            if (isTodoAlreadyShared != null) throw new CustomException("Todo already shared to the user");
+            if (dto.CurrentUserId == user.Id) throw new CustomException("Todo is being shared to the Creator Of todo.");
+            return user;
+        }
+
+        public async Task<List<SharedTodoDto>> GetAllTodosSharedToCurrentUser(SharedTodoFilterDto filter)
         {
             try
             {
-                var user = await _userRepo.GetByIdString(currentUserId).ConfigureAwait(false) ?? throw new UserNotFoundException();
-                var sharedTodosOfUser = await _sharedTodoRepo.GetQueryable().Where(a => a.UserId == currentUserId).ToListAsync().ConfigureAwait(false);
+                var sharedTodoQueryAble = await FilterTodos(filter).ConfigureAwait(false);
+                var sharedTodosOfUser = await sharedTodoQueryAble.ToListAsync().ConfigureAwait(false);
                 var returnModel = new List<SharedTodoDto>();
-                foreach(var  sharedTodo in sharedTodosOfUser)
+                foreach (var sharedTodo in sharedTodosOfUser)
                 {
                     var model = new SharedTodoDto
                     {
                         Id = sharedTodo.Id,
                         TodoId = sharedTodo.TodoId,
                         TodoTitle = sharedTodo.Todo.Title,
-                        Description = sharedTodo.Description,
+                        Description = sharedTodo.Todo.Description,
                         TodoDueDate = sharedTodo.Todo.DueDate,
                         SharedBy = sharedTodo.Todo.CreatedByUser.Name,
+                        SharedTo = sharedTodo.User.Name,
+                        PriorityLevel = Enum.GetName(typeof(TodoPriorityEnum), sharedTodo.Todo.PriorityLevel),
+                        Status = sharedTodo.Todo.Status
                     };
                     returnModel.Add(model);
                 }
@@ -110,5 +104,34 @@ namespace ServiceModule.Service
                 throw;
             }
         }
-    }
+
+
+        private async Task<IQueryable<SharedTodoEntity>> FilterTodos(SharedTodoFilterDto filter)
+        {
+            IQueryable<SharedTodoEntity> allTodosOfUserQueryable = _sharedTodoRepo.GetQueryable().Include(a => a.User).Include(a => a.Todo).ThenInclude(a => a.CreatedByUser);
+            if (!string.IsNullOrEmpty(filter.Title))
+            {
+                allTodosOfUserQueryable = allTodosOfUserQueryable.Where(a => a.Todo.Title.Contains(filter.Title));
+            };
+            if (filter.PriorityLevel != null)
+            {
+                allTodosOfUserQueryable = allTodosOfUserQueryable.Where(a => a.Todo.PriorityLevel == filter.PriorityLevel);
+            }
+
+            if (!string.IsNullOrEmpty(filter.Status))
+            {
+                allTodosOfUserQueryable = allTodosOfUserQueryable.Where(a => a.Todo.Status == filter.Status);
+            }
+
+            var currrentUser = await _userRepo.GetByIdString(filter.CurrentUserId).ConfigureAwait(false) ?? throw new UserNotFoundException();
+            if (!currrentUser.IsSuperAdmin)
+            {
+                allTodosOfUserQueryable = allTodosOfUserQueryable.Where(a => a.UserId == filter.CurrentUserId);
+
+            };
+            allTodosOfUserQueryable = allTodosOfUserQueryable.Where(a => a.Todo.DueDate.Date >= filter.FromDate.Date && a.Todo.DueDate.Date <= filter.ToDate.Date).OrderByDescending(b => b.Todo.PriorityLevel).ThenBy(a => a.Todo.DueDate);
+            return allTodosOfUserQueryable;
+        }
+
+        }
 }

@@ -27,7 +27,7 @@ namespace InfrastructureModule.Repository
             return await _context.Set<T>().ToListAsync().ConfigureAwait(false);
         }
 
-        public async Task<T?> GetById(long id)
+        public async Task<T?> GetById(int id)
         {
             return await _context.Set<T>().FindAsync(id).ConfigureAwait(false);
         }

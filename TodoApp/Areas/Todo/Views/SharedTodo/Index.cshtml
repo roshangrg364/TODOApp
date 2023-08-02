@@ -1,0 +1,152 @@
+﻿@model SharedTodoIndexViewModel
+@{
+
+}
+@using DomainModule.Enums
+@using DomainModule.Entity
+<section class="vh-100 gradient-custom-2">
+    <div class="container  ">
+        <div class="row ">
+            <div class="col-md-12 col-xl-12">
+
+                <div class="card mask-custom">
+                    <div class="card-body p-4">
+
+                        <div class="text-center">
+
+                            <h4 class="my-4">Shared Todo List</h4>
+                        </div>
+
+                        <form asp-area="Todo" asp-controller="SharedTodo" asp-action="Index">
+                            <div class="d-flex justify-content-start col-md-12">
+
+                                <div class="col-md-2 form-group">
+                                    <label>From Date</label>
+                                    <input asp-for="FromDate" type="date" class="form-control form-control-user" />
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>To Date</label>
+                                    <input asp-for="ToDate" type="date" class="form-control form-control-user" />
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>Priority Level</label>
+                                    @Html.DropDownListFor(a => a.PriorityLevel, (SelectList)ViewBag.TodoPriorityLevel,"--All--", new { @class = "form-control form-control-user " })
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>Status</label>
+                                    <select class="form-control form-control-user">
+                                        <option>--All--</option>
+                                        <option value="@TodoEntity.StatusActive">@TodoEntity.StatusActive</option>
+                                        <option value="@TodoEntity.StatusCompleted">@TodoEntity.StatusCompleted</option>
+
+                                    </select>
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>Title</label>
+                                    @Html.TextBoxFor(a=>a.Title,"",new{@class="form-control form-control-user"})
+                                </div>
+
+                                <div class="col-md-2 form-group mt-4">
+                                    <button type="submit" class="btn btn-primary form-control">Filter</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <table class="table  mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">S.No</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Shared By</th>
+                                    <th scope="col">Shared To</th>
+                                    <th scope="col">Priority</th>
+                                    <th scope="col">Due Date</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Todos.Any())
+                                {
+                                    int i = 1;
+                                    foreach (var item in Model.Todos)
+                                    {
+                                        <tr class="fw-normal">
+                                            <th>
+                                                <span class="ms-2">@i</span>
+                                            </th>
+                                            <td class="align-middle">
+                                                <span>@item.TodoTitle</span>
+                                            </td>
+                                            <td class="align-middle">
+                                                <span>@item.SharedBy</span>
+                                            </td>
+                                            <td class="align-middle">
+                                                <span>@item.SharedTo</span>
+                                            </td>
+                                            <td class="align-middle">
+                                                @if (item.PriorityLevel == TodoPriorityEnum.Low.ToString())
+                                                {
+                                                    <h6 class="mb-0"><span class="badge bg-success text-white">Low</span></h6>
+                                                }
+                                                else if (item.PriorityLevel == TodoPriorityEnum.Medium.ToString())
+                                                {
+                                                    <h6 class="mb-0"><span class="badge bg-warning text-white">Medium</span></h6>
+                                                }
+                                                else
+                                                {
+                                                    <h6 class="mb-0"><span class="badge bg-danger text-white">High</span></h6>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span>@item.TodoDueDate.ToString("yyyy-MM-dd")</span>
+                                            </td>
+                                            <td>
+                                                @if(item.Status == TodoEntity.StatusActive)
+                                                {
+                                                    <span class="badge badge-success">Active</span>
+                                                }
+                                                else
+
+                                                {
+                                                    <span class="badge badge-info">Completed</span>
+                                                }
+                                               </td>
+                                            <td class="align-middle">
+
+                                                <a asp-area="Todo" asp-controller="Todo" asp-action="ViewDetail" asp-route-todoId="@item.TodoId" data-mdb-toggle="tooltip" title="View Detail">
+                                                    <i class="fas fa-eye fa-lg text-secondary me-3"></i>
+                                                </a> |
+
+                                                @if (item.Status == TodoEntity.StatusActive)
+                                                {
+                                                    <span>
+                                                        <a asp-area="Todo" asp-controller="Todo" asp-action="MarkAsCompleted" asp-route-todoId="@item.TodoId" data-mdb-toggle="tooltip" title="Complete Todo">
+                                                            <i class="fas fa-check fa-lg text-success"></i>
+                                                        </a> |
+
+                                                    </span>
+                                                }
+
+                                            </td>
+                                        </tr>
+                                    }
+                                    i++;
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6">No Records Found</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

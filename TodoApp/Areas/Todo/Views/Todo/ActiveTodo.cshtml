@@ -1,0 +1,54 @@
+﻿@model TodoIndexViewModel
+@{
+    ViewData["Title"] = "Active Todo";
+}
+@using DomainModule.Enums
+<section class="vh-100 gradient-custom-2">
+    <div class="container  ">
+        <div class="row ">
+            <div class="col-md-12 col-xl-12">
+
+                <div class="card mask-custom">
+                    <div class="card-body p-4">
+
+                        <div class="text-center">
+
+                            <h4 class="my-4"> @ViewData["Title"]</h4>
+                        </div>
+                      
+                        <form asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo">
+                            <div class="d-flex justify-content-start col-md-12">
+
+
+                                <div class="col-md-2 form-group">
+                                    <label>From Date</label>
+                                    <input asp-for="FromDate" type="date" class="form-control form-control-user" />
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>To Date</label>
+                                    <input asp-for="ToDate" type="date" class="form-control form-control-user" />
+                                </div>
+                                <div class="col-md-2 form-group">
+                                    <label>Priority Level</label>
+                                    @Html.DropDownListFor(a => a.PriorityLevel, (SelectList)ViewBag.TodoPriorityLevel,"--All--", new { @class = "form-control form-control-user  " })
+                                </div>
+                               
+                                <div class="col-md-2 form-group">
+                                    <label>Title</label>
+                                    @Html.TextBoxFor(a=>a.Title,"",new{@class="form-control form-control-user"})
+                                </div>
+
+                                <div class="col-md-2 form-group mt-4">
+                                    <button type="submit" class="btn btn-primary form-control">Filter</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        @await Html.PartialAsync("~/Areas/Todo/Views/Todo/_TodoListView.cshtml", Model.Todos)
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

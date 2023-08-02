@@ -18,6 +18,7 @@ namespace InfrastructureModule.Mapping
             builder.Property<string>(a => a.Status).HasMaxLength(50).IsRequired();
             builder.Property<int>(a => a.PriorityLevel).IsRequired();
             builder.Property<DateTime>(a => a.CreatedOn).IsRequired();
+            builder.Property<DateTime?>(a => a.ModifiedOn);
             builder.Property<DateTime?>(a => a.CompletedOn);
             builder.Property<DateTime>(a => a.DueDate).IsRequired();
             builder.Property<string>(a => a.CreatedBy);
@@ -25,7 +26,7 @@ namespace InfrastructureModule.Mapping
             builder.Property<string?>(a => a.Description);
             builder.HasOne(a => a.CreatedByUser).WithMany().HasForeignKey(a => a.CreatedBy).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(a => a.CompletedByUser).WithMany().HasForeignKey(a => a.CompletedBy).OnDelete(DeleteBehavior.NoAction);
-            builder.HasMany(a => a.SharedTodos).WithOne().HasForeignKey(a => a.TodoId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasMany(a => a.SharedTodos).WithOne(a=>a.Todo).HasForeignKey(a => a.TodoId).OnDelete(DeleteBehavior.NoAction);
            
         }
     }
