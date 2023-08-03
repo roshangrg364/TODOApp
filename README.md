@@ -70,7 +70,9 @@
   #### How to Set Reminder ?
   - Creator of todo and user whom the the todo is can set reminder for todo .
   - Once reminder is set the particular user will be notified by a popup message at the time set as reminder
-    
+
+
+
 # Have Fun !!
   
     
