@@ -42,10 +42,11 @@ namespace DomainModule.Entity
         public string Name { get; set; }
         public DateTime CreatedOn { get; protected set; }
         public string Status { get; protected set; }
-        public string Type { get; set; }
+        public string Type { get; protected set; }
         public virtual IList<TodoEntity> Todos { get; protected set; }
         public bool IsActive => Status == StatusActive;
         public bool IsSuperAdmin => Type == TypeSuperAdmin;
+
         public void Activate()
         {
             Status = StatusActive;

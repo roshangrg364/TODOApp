@@ -40,14 +40,14 @@ namespace DomainModule.Entity
         public DateTime CreatedOn { get;protected set; }
         public DateTime? ModifiedOn { get;protected set; }
         public DateTime? CompletedOn { get;protected set; }
-        public DateTime DueDate { get; set; }
+        public DateTime DueDate { get;protected set; }
         public string? Description { get; set; }
         public string CreatedBy { get; protected set; }
-        public string? CompletedBy { get; set; }
-        public virtual User CreatedByUser { get; set; }
-        public virtual User? CompletedByUser { get; set; }
-        public virtual IList<SharedTodoEntity> SharedTodos { get; set; } = new List<SharedTodoEntity>();
-        public virtual IList<TodoHistory> SharedTodoHistory { get; set; } = new List<TodoHistory>();
+        public string? CompletedBy { get;protected set; }
+        public virtual User CreatedByUser { get;protected set; }
+        public virtual User? CompletedByUser { get;protected set; }
+        public virtual IList<SharedTodoEntity> SharedTodos { get;protected set; } = new List<SharedTodoEntity>();
+        public virtual IList<TodoHistory> SharedTodoHistory { get; protected set; } = new List<TodoHistory>();
         public bool IsActive => Status == StatusActive;
         public bool IsCompleted => Status == StatusCompleted;
         public void MarkAsComplete(User completedBy)

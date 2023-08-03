@@ -27,12 +27,12 @@ namespace DomainModule.Entity
         public int Id { get; protected set; }
         public int TodoId { get; protected set; }
         //commenter on todo or the person who shared todo
-        public string CommentedByUserId { get; set; }
-        public string Comment { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public virtual User CommentedByUser { get; set; }
-        public virtual TodoEntity Todo { get; set; }
-        public string Status { get; set; }
+        public string CommentedByUserId { get;protected set; }
+        public string Comment { get;protected set; }
+        public DateTime CreatedOn { get;protected set; }
+        public virtual User CommentedByUser { get; protected set; }
+        public virtual TodoEntity Todo { get; protected set; }
+        public string Status { get; protected set; }
     }
 
 
