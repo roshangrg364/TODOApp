@@ -39,8 +39,8 @@
                                 </div>
                                 <div class="col-md-2 form-group">
                                     <label>Status</label>
-                                    <select class="form-control form-control-user">
-                                        <option>--All--</option>
+                                    <select asp-for="Status" class="form-control form-control-user">
+                                        <option value="">--All--</option>
                                         <option value="@TodoEntity.StatusActive">@TodoEntity.StatusActive</option>
                                         <option value="@TodoEntity.StatusCompleted">@TodoEntity.StatusCompleted</option>
 
@@ -65,3 +65,11 @@
         </div>
     </div>
 </section>
+@section Scripts
+{
+    <script>
+          $(document).ready(function(){
+            $('#todoTable').DataTable()
+          })
+    </script>
+}

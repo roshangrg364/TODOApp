@@ -62,7 +62,7 @@ namespace ServiceModule.Service
                     HasSetRemainder = todo.TodoRemainder.Any(a => a.IsActive && a.SetById == userId)
                 };
 
-                foreach (var history in todo.SharedTodoHistory.OrderBy(a=>a.CreatedOn))
+                foreach (var history in todo.SharedTodoHistory.OrderBy(a => a.CreatedOn))
                 {
                     var sharedTodoHistoryModel = new TodoHistoryDto
                     {
@@ -347,7 +347,7 @@ namespace ServiceModule.Service
                     var todo = await _todoRepo.GetById(todoId).ConfigureAwait(false) ?? throw new CustomException("Todo Not Found");
                     if (todo.IsCompleted) throw new CustomException("Todo already completed");
                     var todoRemainderOfUser = await _todoRemainderRepo.GetQueryable().Where(a => a.TodoId == todoId && a.SetById == userId && a.IsActive).FirstOrDefaultAsync().ConfigureAwait(false);
-                    if(todoRemainderOfUser !=null)
+                    if (todoRemainderOfUser != null)
                     {
                         _todoRemainderRepo.Delete(todoRemainderOfUser);
                         await _unitOfWork.CompleteAsync().ConfigureAwait(false);
@@ -378,8 +378,11 @@ namespace ServiceModule.Service
                     foreach (var todo in todoRemainders)
                     {
                         todo.MarkAsComplete();
-                        var message = $"Reminder for Todo ({todo.Todo.Title}). Due date : {todo.Todo.DueDate.ToString("yyyy-MM-dd")}";
-                        messages.Add(message);
+                        if (!todo.Todo.IsCompleted)
+                        {
+                            var message = $"Reminder for Todo ({todo.Todo.Title}). Due date : {todo.Todo.DueDate.ToString("yyyy-MM-dd")}";
+                            messages.Add(message);
+                        }
                     }
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
