@@ -64,10 +64,13 @@
    - On delete all the data related to the todo will be deleted.
 
   #### How to complete todo?
-    - User whom the todo is shared and the creator are accessible to close todo.
-     - User can place a comment and click on close todo to complete the todo
+  - User whom the todo is shared and the creator are accessible to close todo.
+  - User can place a comment and click on close todo to complete the todo
 
-
+  #### How to Set Reminder ?
+  - Creator of todo and user whom the the todo is can set reminder for todo .
+  - Once reminder is set the particular user will be notified by a popup message at the time set as reminder
+    
 # Have Fun !!
   
     
