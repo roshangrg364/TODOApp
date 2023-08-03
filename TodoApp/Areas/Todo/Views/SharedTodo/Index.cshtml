@@ -118,16 +118,6 @@
                                                     <i class="fas fa-eye fa-lg text-secondary me-3"></i>
                                                 </a> |
 
-                                                @if (item.Status == TodoEntity.StatusActive)
-                                                {
-                                                    <span>
-                                                        <a asp-area="Todo" asp-controller="Todo" asp-action="MarkAsCompleted" asp-route-todoId="@item.TodoId" data-mdb-toggle="tooltip" title="Complete Todo">
-                                                            <i class="fas fa-check fa-lg text-success"></i>
-                                                        </a> |
-
-                                                    </span>
-                                                }
-
                                             </td>
                                         </tr>
                                     }

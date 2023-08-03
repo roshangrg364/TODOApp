@@ -43,6 +43,7 @@ namespace ServiceModule.Service
                     Id = todo.Id,
                     Title = todo.Title,
                     CreatedBy = todo.CreatedByUser.Name,
+                    CreatedByUserId = todo.CreatedBy,
                     Description = todo.Description,
                     Status = todo.Status,
                     PriorityLevel = Enum.GetName(typeof(TodoPriorityEnum), todo.PriorityLevel),
@@ -265,7 +266,7 @@ namespace ServiceModule.Service
         }
         private TodoHistory AddSharedTodoHistory(TodoEntity todo, User user, string comment, string status)
         {
-            var sharedTodoHistory = new TodoHistory(todo, todo.CreatedByUser, status, comment);
+            var sharedTodoHistory = new TodoHistory(todo, user, status, comment);
             return sharedTodoHistory;
         }
 

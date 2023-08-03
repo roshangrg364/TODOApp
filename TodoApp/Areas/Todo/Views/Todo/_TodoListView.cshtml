@@ -61,15 +61,7 @@
                                 <a asp-area="Todo" asp-controller="Todo" asp-action="Delete" asp-route-todoId="@item.Id" data-mdb-toggle="tooltip" title="Remove">
                                     <i class="fas fa-trash-alt fa-lg text-danger"></i>
                                 </a> |
-                                <a asp-area="Todo" asp-controller="Todo" asp-action="MarkAsCompleted" asp-route-todoId="@item.Id" data-mdb-toggle="tooltip" title="Complete Todo">
-                                    <i class="fas fa-check fa-lg text-success"></i>
-                                </a> |
-                                @if (item.IsTodoCreator)
-                                {
-                                <a asp-area="Todo" asp-controller="Todo" asp-action="ShareTodo" asp-route-todoId="@item.Id" data-mdb-toggle="tooltip" title="Share Todo">
-                                    <i class="fas fa-share fa-lg text-success"></i>
-                                </a>
-                                }
+                               
                             </span>
                         }
 

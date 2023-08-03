@@ -10,10 +10,37 @@ namespace TodoApp.SignalR
         {
             _todoService = todoService;
         }
-        public async Task ShareTodo(int todoId)
+        private readonly static ConnectionMapping<string> _connections =
+             new ConnectionMapping<string>();
+
+        public void SendChatMessage(string userId)
         {
-            var todo = await _todoService.GetById(todoId);
-            await Clients.Others.SendAsync("ReceiveMessage", todo.CreatedBy,"TodoCreated");
+            string name = Context.User.Identity.Name;
+
+            foreach (var connectionId in _connections.GetConnections(userId))
+            {
+                Clients.Client(connectionId).SendAsync("ReceiveMessage","dsfdfdf");
+            }
         }
+
+        public override Task OnConnectedAsync()
+        {
+            string name = Context.User.Identity.Name;
+
+            _connections.Add(name, Context.ConnectionId);
+
+            return base.OnConnectedAsync();
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            string name = Context.User.Identity.Name;
+
+            _connections.Remove(name, Context.ConnectionId);
+
+            return base.OnDisconnectedAsync(exception);
+        }
+
+      
     }
 }
