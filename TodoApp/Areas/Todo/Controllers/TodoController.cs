@@ -84,7 +84,8 @@ namespace TodoApp.Areas.Todo.Controllers
                     CompletedByUser = todo.CompletedByUser,
                     CreatedByUser = todo.CreatedByUser,
                     CompletedOn = todo.CompletedOn,
-                    CreatedOn = todo.CreatedOn
+                    CreatedOn = todo.CreatedOn,
+                    IsTodoCreator = todo.CreatedBy == currentUSerId
                 });
             }
             return View(model);
@@ -111,7 +112,8 @@ namespace TodoApp.Areas.Todo.Controllers
                     CompletedByUser = todo.CompletedByUser,
                     CreatedByUser = todo.CreatedByUser,
                     CompletedOn = todo.CompletedOn,
-                    CreatedOn = todo.CreatedOn
+                    CreatedOn = todo.CreatedOn,
+                    IsTodoCreator = todo.CreatedBy == currentUSerId
                 });
             }
             return View(model);
@@ -215,7 +217,7 @@ namespace TodoApp.Areas.Todo.Controllers
                     };
                     await _todoService.Update(todoEditDto).ConfigureAwait(true);
                     _notify.AddSuccessToastMessage("Todo Updated Successfully");
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(ViewDetail),new {todoId=model.Id});
                 }
                 else
                 {
@@ -233,23 +235,7 @@ namespace TodoApp.Areas.Todo.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(int todoId)
-        {
-            try
-            {
-                await _todoService.Delete(todoId).ConfigureAwait(true);
-                _notify.AddSuccessToastMessage("Todo Deleted Successfully");
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-
-                _notify.AddErrorToastMessage(ex.Message);
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-
+      
         public async Task<IActionResult> ViewDetail(int todoId)
         {
             try
@@ -270,6 +256,7 @@ namespace TodoApp.Areas.Todo.Controllers
                     ModifiedOn = todoDetails.ModifiedOn,
                     Status = todoDetails.Status,
                     IsTodoCreator = todoDetails.CreatedByUserId == this.GetCurrentUserId(),
+                    IsEligible = todoDetails.EligibleUsersToTakeActionOnTodo.Contains(this.GetCurrentUserId())
                 };
 
                 foreach (var sharedTodo in todoDetails.SharedTodoHistory)

@@ -73,7 +73,16 @@
                                
                                 <div class="media-body ">
                                     <small class="pull-right"> Created On: @history.CreatedOn.ToString("yyyy-MM-dd")</small><br>
-                                      <strong>Todo @history.Status by @history.CommentedBy</strong>
+                                    @if(history.Status == TodoHistory.StatusShared)
+                                    {
+                                        <strong>Todo @history.Status to @history.CommentedBy</strong>
+
+                                    }
+                                    else
+                                    {
+                                        <strong>Todo @history.Status by @history.CommentedBy</strong>
+
+                                    }
                                         <br />
                                    
 

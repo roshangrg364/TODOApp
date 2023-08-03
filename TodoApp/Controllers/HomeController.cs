@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoApp.Models;
 using System.Diagnostics;
+using TodoApp.Extensions;
 
 namespace TodoApp.Controllers
 {
@@ -15,9 +16,11 @@ namespace TodoApp.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async  Task<IActionResult> Index()
         {
-            return View();
+            var user =await  this.GetCurrentUser();
+
+            return View(new HomeIndexViewModel { IsSuperAdmin=user.IsSuperAdmin});
         }
 
         public IActionResult Privacy()

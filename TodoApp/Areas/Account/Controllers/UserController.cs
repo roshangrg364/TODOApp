@@ -39,7 +39,7 @@ namespace TodoApp.Areas.Account.Controllers
             _roleManager = roleManager;
             _userManager = userManager;
         }
-        [Authorize(Policy ="User-View")]
+        [Authorize(Policy = "User-View")]
         public async Task<IActionResult> Index()
         {
             var users = await _userRepo.GetQueryable().Where(a => a.Type != DomainModule.Entity.User.TypeSuperAdmin).ToListAsync().ConfigureAwait(true);
@@ -161,12 +161,10 @@ namespace TodoApp.Areas.Account.Controllers
         }
         public async Task<IActionResult> UserProfile()
         {
-          
+
             try
             {
                 var userId = this.GetCurrentUserId();
-                var roles = await _roleManager.Roles.Where(a => a.Name != "SuperAdmin").ToListAsync();
-                ViewBag.RoleList = new SelectList(roles, "Id", "Name");
                 var user = await _userManager.FindByIdAsync(userId).ConfigureAwait(true) ?? throw new UserNotFoundException();
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var allRoles = await _roleManager.Roles.Where(a => userRoles.Contains(a.Name)).ToListAsync().ConfigureAwait(true);
@@ -202,20 +200,18 @@ namespace TodoApp.Areas.Account.Controllers
                     EmailAddress = model.EmailAddress,
                     MobileNumber = model.MobileNumber,
                     UserName = model.UserName,
-                    Roles = model.Roles
+                    Roles = new List<string>()
                 };
                 await _userService.Edit(editDto);
 
                 _notify.AddSuccessToastMessage("Updated Successfully.");
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index", "Home",new {area=""});
             }
             catch (Exception ex)
             {
                 _notify.AddErrorToastMessage(ex.Message);
 
             }
-            var roles = await _roleManager.Roles.Where(a => a.Name != "SuperAdmin").ToListAsync();
-            ViewBag.RoleList = new SelectList(roles, "Id", "Name");
             return View(model);
         }
 
@@ -275,7 +271,7 @@ namespace TodoApp.Areas.Account.Controllers
                     }
                     else
                     {
-                        _notify.AddInfoToastMessage(string.Join("</br>",result.Errors.Select(a=>a.Description).ToList()));
+                        _notify.AddInfoToastMessage(string.Join("</br>", result.Errors.Select(a => a.Description).ToList()));
                     }
 
                 }

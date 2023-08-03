@@ -41,6 +41,40 @@ namespace TodoApp.Areas.Todo.ApiController
             }
         }
 
+     
+        [HttpPost("comment")]
+        public async Task<IActionResult> CommentOnTodo([FromBody] TodoHistoryCreateViewModel model)
+        {
+            try
+            {
+                var todoHistoryDto = new TodoHistoryCreateDto(this.GetCurrentUserId(), model.TodoId, model.Comment);
+                var todoDetails =await _todoService.CommentOnTodo(todoHistoryDto).ConfigureAwait(true);
+                ToDoDetailsViewModel todoDetailViewModel = BindTodoDetailViewModel(todoDetails);
+
+                var todoDetailsView =  this.RenderViewAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", todoDetailViewModel, true).GetAwaiter().GetResult();
+               
+                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Commented On Todo Successfully" ,Data = todoDetailsView});
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new ResponseModel { IsSuccess = false, Status = StatusType.error.ToString(), Message = ex.Message });
+            }
+        }
+
+
+        [HttpDelete("{todoId:int}")]
+        public async Task<IActionResult> Delete(int todoId)
+        {
+            try
+            {
+                await _todoService.Delete(todoId).ConfigureAwait(true);
+                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Deleted Successfully"});
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new ResponseModel { IsSuccess = false, Status = StatusType.error.ToString(), Message = ex.Message });
+            }
+        }
         private static ToDoDetailsViewModel BindTodoDetailViewModel(TodoDetailsDto todoDetails)
         {
             var todoDetailViewModel = new ToDoDetailsViewModel
@@ -75,23 +109,6 @@ namespace TodoApp.Areas.Todo.ApiController
             return todoDetailViewModel;
         }
 
-        [HttpPost("comment")]
-        public async Task<IActionResult> CommentOnTodo([FromBody] TodoHistoryCreateViewModel model)
-        {
-            try
-            {
-                var todoHistoryDto = new TodoHistoryCreateDto(this.GetCurrentUserId(), model.TodoId, model.Comment);
-                var todoDetails =await _todoService.CommentOnTodo(todoHistoryDto).ConfigureAwait(true);
-                ToDoDetailsViewModel todoDetailViewModel = BindTodoDetailViewModel(todoDetails);
 
-                var todoDetailsView =  this.RenderViewAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", todoDetailViewModel, true).GetAwaiter().GetResult();
-                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Todo Completed Successfully", Data = todoDetailsView });
-                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Commented On Todo" });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new ResponseModel { IsSuccess = false, Status = StatusType.error.ToString(), Message = ex.Message });
-            }
-        }
     }
 }

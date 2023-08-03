@@ -21,15 +21,18 @@ namespace ServiceModule.Service
         private readonly UserRepositoryInterface _userRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly TodoHistoryRepositoryInterface _todoHistoryRepo;
+        private readonly SharedTodoRepositoryInterface _sharedTodoRepo;
         public TodoService(TodoRepositoryInterface todoRepo,
             UserRepositoryInterface userRepo,
             IUnitOfWork unitOfWork,
-            TodoHistoryRepositoryInterface todoHistoryRepo)
+            TodoHistoryRepositoryInterface todoHistoryRepo,
+            SharedTodoRepositoryInterface sharedTodoRepo)
         {
             _todoRepo = todoRepo;
             _userRepo = userRepo;
             _unitOfWork = unitOfWork;
             _todoHistoryRepo = todoHistoryRepo;
+            _sharedTodoRepo = sharedTodoRepo;
         }
 
         public async Task<TodoDetailsDto> GetTodoDetails(int todoId)
@@ -37,7 +40,11 @@ namespace ServiceModule.Service
             try
             {
                 var todo = await _todoRepo.GetQueryable().Include(a => a.SharedTodoHistory).Include(a => a.CreatedByUser).Include(a => a.CompletedByUser).Where(a => a.Id == todoId).FirstOrDefaultAsync().ConfigureAwait(false) ?? throw new CustomException("Todo not found");
-
+                var eligibleUserToTakeActionOnTodo = new List<string>
+                {
+                    todo.CreatedBy
+                };
+                eligibleUserToTakeActionOnTodo.AddRange(todo.SharedTodos.Select(a => a.UserId).ToList());
                 var todoDetailsDto = new TodoDetailsDto()
                 {
                     Id = todo.Id,
@@ -52,6 +59,7 @@ namespace ServiceModule.Service
                     ModifiedOn = todo.ModifiedOn,
                     CompletedBy = todo.CompletedByUser != null ? todo.CompletedByUser.Name : string.Empty,
                     CompletedOn = todo.CompletedOn,
+                    EligibleUsersToTakeActionOnTodo = eligibleUserToTakeActionOnTodo
                 };
 
                 foreach (var history in todo.SharedTodoHistory)
@@ -111,6 +119,9 @@ namespace ServiceModule.Service
                 {
                     var todo = await _todoRepo.GetById(todoId).ConfigureAwait(false) ?? throw new CustomException("Todo Not Found");
                     ValidateTodo(todo);
+                    var todoHistory = todo.SharedTodoHistory.ToList();
+                    _todoHistoryRepo.DeleteRange(todoHistory);
+                    _sharedTodoRepo.DeleteRange(todo.SharedTodos.ToList());
                     _todoRepo.Delete(todo);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
@@ -129,7 +140,7 @@ namespace ServiceModule.Service
             try
             {
                 IQueryable<TodoEntity> allTodosOfUserQueryable = await FilterTodos(filter).ConfigureAwait(false);
-                var allTodosOfuser = await allTodosOfUserQueryable.Where(a => a.DueDate.Date >= filter.FromDate.Date && a.DueDate.Date <= filter.ToDate.Date).OrderByDescending(b => b.PriorityLevel).ThenBy(a => a.DueDate).ToListAsync().ConfigureAwait(false);
+                var allTodosOfuser = await allTodosOfUserQueryable.Where(a => a.DueDate.Date >= filter.FromDate.Date && a.DueDate.Date <= filter.ToDate.Date).OrderBy(a=>a.Status).ThenByDescending(b => b.PriorityLevel).ThenBy(a => a.DueDate).ToListAsync().ConfigureAwait(false);
                 var returnModel = new List<TodoDto>();
                 foreach (var todo in allTodosOfuser)
                 {

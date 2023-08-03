@@ -217,7 +217,7 @@
                         <div id="main-content">
                             @await Html.PartialAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", Model)
                         </div>
-                        @if (Model.Status == TodoEntity.StatusActive)
+                        @if (Model.Status == TodoEntity.StatusActive && Model.IsEligible)
                         {
                             <div class="commentDiv">
                                 <div class="col-md-12 mt-2 ">
@@ -232,14 +232,21 @@
                                     <div class="form-group col-md-2">
                                         <button class="btn btn-info comment-on-todo form-control">Comment</button>
                                     </div>
-                                    <div class="form-group col-md-3">
-                                        @if (Model.IsTodoCreator)
-                                        {
+
+                                    @if (Model.IsTodoCreator)
+                                    {
+                                        <div class="form-group col-md-3">
                                             <a asp-area="Todo" asp-controller="Todo" asp-action="ShareTodo" asp-route-todoId="@Model.Id" data-mdb-toggle="tooltip" class="btn btn-primary form-control" title="Share Todo">
                                                 <i class="fas fa-share fa-lg text-success"></i> Share With Others
                                             </a>
-                                        }
-                                    </div>
+                                        </div>
+                                        <div class="form-group col-md-2">
+                                            <button class="btn btn-danger form-control delete-todo" data-mdb-toggle="tooltip" title="Remove">
+                                                <i class="fas fa-trash-alt fa-lg text-white"></i> Delete
+                                            </button>
+                                        </div>
+                                    }
+
                                 </div>
                             </div>
                         }
@@ -253,8 +260,8 @@
 
 @section Scripts{
     <script>
-        $(document).on("click", ".comment-on-todo", function () {
-            debugger;
+        $(document).on("click", ".comment-on-todo", function (e) {
+            e.preventDefault()
             const todoId = $("#Id").val();
             const comment = $("#Comment").val();
             const data = {
@@ -271,9 +278,10 @@
                     if (data.IsSuccess == true) {
                         $("#main-content").html(data.Data)
                         $("#Comment").val()
+                        shownotification(data.Status, data.Message)
                     }
                     else {
-                        console.log(data)
+                        shownotification(data.Status, data.Message)
                     }
                     unblockwindow();
                 },
@@ -284,7 +292,8 @@
             })
         })
 
-        $(document).on("click", ".mark-as-complete", function () {
+        $(document).on("click", ".mark-as-complete", function (e) {
+            e.preventDefault()
             const todoId = $("#Id").val();
             const comment = $("#Comment").val();
             const data = {
@@ -302,17 +311,58 @@
                         $("#main-content").html(data.Data)
                         document.querySelector(".commentDiv").classList.add("hidden")
                         $("#Comment").val("")
+                        shownotification(data.Status, data.Message)
                     }
                     else {
-                        console.log(data)
+                        shownotification(data.Status, data.Message)
                     }
                     unblockwindow();
                 },
                 error: function (response) {
-                    console.log(response)
+
                     unblockwindow();
                 }
             })
+        })
+
+
+        $(document).on("click", ".delete-todo", function (e) {
+            e.preventDefault()
+            blockwindow()
+            Swal.fire({
+                title: 'Do you want to delete this todo?.Deleting this will delete all the todo references.',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const todoId = $("#Id").val()
+                    $.ajax({
+                        type: "delete",
+                        url: "/api/todo/" + todoId,
+                        success: function (response) {
+                           
+                            if (response.IsSuccess==true) {
+                                shownotification("success","deleted Successfully")
+                                window.location ="/Todo/Todo/Index";
+                                unblockwindow()
+                            }
+                            else {
+                                shownotification("info",response.Message)
+                                unblockwindow()
+                            }
+                        },
+                        error: function (error) {
+                            unblockwindow()
+                            shownotification("error", "something went wrong. please contact to administrator")
+                        }
+                    })
+                }
+                else
+                {
+                    unblockwindow();
+                }
+            })
+
         })
 
     </script>

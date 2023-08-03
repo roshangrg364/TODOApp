@@ -163,3 +163,13 @@ function blockwindow() {
 function unblockwindow() {
     document.querySelector(".loading").classList.add("hidden")
 }
+
+function shownotification(status, message, title="Notification!") {
+    Swal.fire({ 
+        title: title,
+        text: message,
+        icon: status,
+        showConfirmButton: false,
+        timer: 1500
+    });
+}

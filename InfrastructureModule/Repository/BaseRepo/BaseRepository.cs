@@ -22,6 +22,11 @@ namespace InfrastructureModule.Repository
             _context.Set<T>().Remove(entity);
         }
 
+        public void DeleteRange(IList<T> entity)
+        {
+            _context.Set<T>().RemoveRange(entity);
+        }
+
         public async Task<IList<T>> GetAllAsync()
         {
             return await _context.Set<T>().ToListAsync().ConfigureAwait(false);

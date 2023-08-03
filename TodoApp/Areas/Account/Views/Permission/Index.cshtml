@@ -93,7 +93,7 @@
 
                     <div class="box-body no-padding">
                         <h4 class="card-header">Navigation</h4>
-                        <ul class="nav nav-pills nav-stacked list-group mt-4" >
+                        <ul class="nav nav-pills nav-stacked list-group mt-4">
 
                             @foreach (var module in Model.Permissions.OrderBy(a => a.Module))
                             {
@@ -112,7 +112,7 @@
             </div>
 
             <div class="col-md-9" id="PermissionSection">
-                @Html.Partial("~/Areas/Account/Views/Permission/_AssignPermissionView.cshtml",Model)
+                @await Html.PartialAsync("~/Areas/Account/Views/Permission/_AssignPermissionView.cshtml",Model)
 
             </div>
 
@@ -133,32 +133,36 @@
                 if (RoleId == 0) {
                     swal('Error', "Please select a valid role first.");
                 }
-
+                blockwindow();
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Action("AssignAllPermissionOfModule", "Permission")',
-                    data: {
+                    url: '@Url.Action("AssignAllPermissionOfModule", "PermissionApi")',
+                    contentType: "application/json",
+                    data: JSON.stringify({
                         roleId: RoleId,
                         module: Module,
-                    },
-                    beforeSend: function () {
-                        //$('#loader').show();
-                    },
+                    }),
                     success: function (res) {
-                        $("#PermissionSection").load('@Url.Action("LoadPermissionView", "Permission")?RoleId=' + RoleId);
-                        //$('#loader').hide();
-                        //notifySuccess(res.data.message);
+                        if (res.IsSuccess == true) {
+                            unblockwindow()
+                            $("#PermissionSection").load('@Url.Action("LoadPermissionView", "Permission")?RoleId=' + RoleId);
+                            shownotification(res.Status, res.Message);
+                        }
+                        else {
+                            shownotification(res.Status, res.Message);
+                            unblockwindow()
+                        }
+
                     },
                     error: function (e) {
-                        //if (e.status === 403) {
-                        //    notifyError("Access Denied");
-                        //} else if (e.status === 500) {
-                        //    notifyError(e.responseText);
-                        //} else {
-                        //    console.log(e);
-                        //    notifyError(e.responseJSON.errors);
-                        //}
-                        //$('#loader').hide();
+                      
+                        unblockwindow()
+                        if (e.status == 403) {
+                            shownotification("error", "Unauthorized access")
+                        }
+                        else {
+                            shownotification("error", "something went wrong")
+                        }
                     }
                 });
 
@@ -173,33 +177,37 @@
                 if (RoleId == 0) {
                     swal('Error', "Please select a valid role first.");
                 }
-
+                blockwindow();
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Action("UnAssignAllPermissionOfModule", "Permission")',
-                    data: {
+                    url: '@Url.Action("UnAssignAllPermissionOfModule", "PermissionApi")',
+                    contentType: "application/json",
+                    data: JSON.stringify({
                         roleId: RoleId,
                         module: Module
-                    },
-                    beforeSend: function () {
-                        //$('#loader').show();
-                    },
+                    }),
                     success: function (res) {
-                        $("#PermissionSection").load('@Url.Action("LoadPermissionView", "Permission")?RoleId=' + RoleId);
-                        //$('#loader').hide();
-                        //notifySuccess(res.data.message);
+                        if (res.IsSuccess == true) {
+                            unblockwindow()
+                            $("#PermissionSection").load('@Url.Action("LoadPermissionView", "Permission")?RoleId=' + RoleId);
+                            shownotification(res.Status, res.Message);
+                        }
+                        else {
+                            shownotification(res.Status, res.Message);
+                            unblockwindow()
+                        }
+
                     },
                     error: function (e) {
-                        //if (e.status === 403) {
-                        //    notifyError("Access Denied");
-                        //} else if (e.status === 500) {
-                        //    notifyError(e.responseText);
-                        //} else {
-                        //    console.log(e);
-                        //    notifyError(e.responseJSON.errors);
-                        //}
-                        //$('#loader').hide();
+                        unblockwindow()
+                        if (e.status == 403) {
+                            shownotification("error", "Unauthorized access")
+                        }
+                        else {
+                            shownotification("error", "something went wrong")
+                        }
                     }
+
                 });
 
 
@@ -207,7 +215,7 @@
 
         $(document).on('click', ".AssignPermission",
             (e) => {
-                debugger;
+
                 e.preventDefault();
                 let target = e.target;
                 let RoleId = $("#RoleId").val();
@@ -215,34 +223,38 @@
                 if (!RoleId) {
                     swal('Error', "Please select a valid role first.");
                 }
-
+                blockwindow();
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Action("AssignPermission", "Permission")',
-                    data: {
+                    url: '@Url.Action("AssignPermission", "PermissionApi")',
+                    contentType: "application/json",
+                    data: JSON.stringify({
                         roleId: RoleId,
                         permission: Permission
-                    },
-                    beforeSend: function () {
-                        //$('#loader').show();
-                    },
+                    }),
                     success: function (res) {
-                        $("#PermissionSection").load('@Url.Action("LoadPermissionView", "Permission")?RoleId=' + RoleId);
-                        //$('#loader').hide();
-                        //notifySuccess(res.data.message);
+                        if (res.IsSuccess == true) {
+                            unblockwindow()
+                            $("#PermissionSection").load('@Url.Action("LoadPermissionView", "Permission")?RoleId=' + RoleId);
+                            shownotification(res.Status, res.Message);
+                        }
+                        else {
+                            shownotification(res.Status, res.Message);
+                            unblockwindow()
+                        }
+
                     },
                     error: function (e) {
-                        console.log(e);
-                        if (e.status === 403) {
-                            //notifyError("Access Denied");
-                        } else if (e.status === 500) {
-                            //notifyError(e.responseText);
-                        } else {
-
-                            //notifyError(e.responseJSON.errors);
+                     unblockwindow()
+                        if (e.status == 403) {
+                            shownotification("error", "Unauthorized access")
                         }
-                        $('#loader').hide();
+                        else
+                        {
+                            shownotification("error","something went wrong")
+                        }
                     }
+
                 });
 
             });
@@ -256,33 +268,38 @@
                 if (RoleId == 0) {
                     swal('Error', "Please select a valid role first.");
                 }
-
+                blockwindow();
                 $.ajax({
                     type: "POST",
-                    url: '@Url.Action("UnAssignPermission", "Permission")',
-                    data: {
+                    url: '@Url.Action("UnAssignPermission", "PermissionApi")',
+                    contentType: "application/json",
+                    data: JSON.stringify({
                         roleId: RoleId,
                         permission: Permission
-                    },
-                    beforeSend: function () {
-                        $('#loader').show();
-                    },
+                    }),
+
                     success: function (res) {
-                        $("#PermissionSection").load('@Url.Action("LoadPermissionView", "Permission")?RoleId=' + RoleId);
-                        //$('#loader').hide();
-                        //notifySuccess(res.data.message);
+                        if (res.IsSuccess == true) {
+                            unblockwindow()
+                            $("#PermissionSection").load('@Url.Action("LoadPermissionView", "Permission")?RoleId=' + RoleId);
+                            shownotification(res.Status, res.Message);
+                        }
+                        else {
+                            shownotification(res.Status, res.Message);
+                            unblockwindow()
+                        }
+
                     },
                     error: function (e) {
-                        console.log(e);
-                        //if (e.status === 403) {
-                        //    notifyError("Access Denied");
-                        //} else if (e.status === 500) {
-                        //    notifyError(e.responseText);
-                        //} else {
-                        //    notifyError(e.responseJSON.errors);
-                        //}
-                        //$('#loader').hide();
+                        unblockwindow()
+                        if (e.status == 403) {
+                            shownotification("error", "Unauthorized access")
+                        }
+                        else {
+                            shownotification("error", "something went wrong")
+                        }
                     }
+
                 });
 
 

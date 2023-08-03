@@ -13,6 +13,7 @@ namespace DomainModule.BaseRepo
         Task InsertRange(IList<T> entities);
         void Update(T entity);
         void Delete(T entity);
+        void DeleteRange(IList<T> entity);
         IQueryable<T> GetQueryable();
         Task<T?> GetById(int id);
     }

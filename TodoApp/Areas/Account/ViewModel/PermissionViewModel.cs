@@ -17,4 +17,17 @@
         public string Value { get; set; }
 
     }
+
+    public class PermissionAssignViewModel
+    {
+        public string  roleId { get; set; }
+        public string  permission { get; set; }
+    }
+
+    public class ModuleAssignViewModel
+    {
+        public string roleId { get; set; }
+        public string module { get; set; }
+    }
 }
+

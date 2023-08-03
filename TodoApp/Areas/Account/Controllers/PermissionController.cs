@@ -76,61 +76,6 @@ namespace TodoApp.Areas.Account.Controllers
             }
         }
 
-        [Authorize(Policy = "Role-AssignPermission")]
-        [HttpPost]
-        public async Task<IActionResult> AssignPermission(string roleId,string permission)
-        {
-            try
-            {
-                  await _roleService.AssignPermission(roleId, permission).ConfigureAwait(true);
-                return Json(new ResponseModel { Status = StatusType.success.ToString(), IsSuccess = true, Message = $"Permission {permission} assinged successfully" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
-            }
-        }
-
-        [Authorize(Policy = "Role-UnAssignPermission")]
-        public async Task<IActionResult> UnAssignPermission(string roleId, string permission)
-        {
-            try
-            {
-                await _roleService.UnAssignPermission(roleId, permission).ConfigureAwait(true);
-                return Json(new ResponseModel { Status = StatusType.success.ToString(), IsSuccess = true, Message = $"Permission {permission} unassinged successfully" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
-            }
-        }
-        [Authorize(Policy = "Role-AssignPermission")]
-        public async Task<IActionResult> AssignAllPermissionOfModule(string roleId, string module)
-        {
-            try
-            {
-                await _roleService.AssignAllPermissionOfModule(roleId, module).ConfigureAwait(true);
-                return Json(new ResponseModel { Status = StatusType.success.ToString(), IsSuccess = true, Message = $"Permission {module} assinged successfully"});
-            }
-            catch (Exception ex)
-            {
-                return Json(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
-            }
-        }
-
-        [Authorize(Policy = "Role-UnAssignPermission")]
-        public async Task<IActionResult> UnAssignAllPermissionOfModule(string roleId, string module)
-        {
-            try
-            {
-                await _roleService.UnAssignPermissionOfModule(roleId, module).ConfigureAwait(true);
-                return Json(new ResponseModel { Status = StatusType.success.ToString(), IsSuccess = true, Message = $"Module {module} unassinged successfully"});
-            }
-            catch (Exception ex)
-            {
-                return Json(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
-            }
-        }
-
+      
     }
 }
