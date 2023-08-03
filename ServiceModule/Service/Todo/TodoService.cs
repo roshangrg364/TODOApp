@@ -5,6 +5,7 @@ using DomainModule.Exceptions;
 using DomainModule.RepositoryInterface;
 using DomainModule.ServiceInterface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,29 +23,27 @@ namespace ServiceModule.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly TodoHistoryRepositoryInterface _todoHistoryRepo;
         private readonly SharedTodoRepositoryInterface _sharedTodoRepo;
+        private readonly TodoRemainderRepositoryInterface _todoRemainderRepo;
         public TodoService(TodoRepositoryInterface todoRepo,
             UserRepositoryInterface userRepo,
             IUnitOfWork unitOfWork,
             TodoHistoryRepositoryInterface todoHistoryRepo,
-            SharedTodoRepositoryInterface sharedTodoRepo)
+            SharedTodoRepositoryInterface sharedTodoRepo,
+            TodoRemainderRepositoryInterface todoRemainderRepo)
         {
             _todoRepo = todoRepo;
             _userRepo = userRepo;
             _unitOfWork = unitOfWork;
             _todoHistoryRepo = todoHistoryRepo;
             _sharedTodoRepo = sharedTodoRepo;
+            _todoRemainderRepo = todoRemainderRepo;
         }
 
-        public async Task<TodoDetailsDto> GetTodoDetails(int todoId)
+        public async Task<TodoDetailsDto> GetTodoDetails(int todoId, string userId)
         {
             try
             {
-                var todo = await _todoRepo.GetQueryable().Include(a => a.SharedTodoHistory).Include(a => a.CreatedByUser).Include(a => a.CompletedByUser).Where(a => a.Id == todoId).FirstOrDefaultAsync().ConfigureAwait(false) ?? throw new CustomException("Todo not found");
-                var eligibleUserToTakeActionOnTodo = new List<string>
-                {
-                    todo.CreatedBy
-                };
-                eligibleUserToTakeActionOnTodo.AddRange(todo.SharedTodos.Select(a => a.UserId).ToList());
+                var todo = await _todoRepo.GetQueryable().Include(a => a.SharedTodoHistory).Include(a => a.SharedTodos).Include(a => a.TodoRemainder).Include(a => a.CreatedByUser).Include(a => a.CompletedByUser).Where(a => a.Id == todoId).FirstOrDefaultAsync().ConfigureAwait(false) ?? throw new CustomException("Todo not found");
                 var todoDetailsDto = new TodoDetailsDto()
                 {
                     Id = todo.Id,
@@ -59,10 +58,11 @@ namespace ServiceModule.Service
                     ModifiedOn = todo.ModifiedOn,
                     CompletedBy = todo.CompletedByUser != null ? todo.CompletedByUser.Name : string.Empty,
                     CompletedOn = todo.CompletedOn,
-                    EligibleUsersToTakeActionOnTodo = eligibleUserToTakeActionOnTodo
+                    IsEligible = todo.CreatedBy == userId || todo.SharedTodos.Any(a => a.UserId == userId),
+                    HasSetRemainder = todo.TodoRemainder.Any(a => a.IsActive && a.SetById == userId)
                 };
 
-                foreach (var history in todo.SharedTodoHistory)
+                foreach (var history in todo.SharedTodoHistory.OrderBy(a=>a.CreatedOn))
                 {
                     var sharedTodoHistoryModel = new TodoHistoryDto
                     {
@@ -140,7 +140,7 @@ namespace ServiceModule.Service
             try
             {
                 IQueryable<TodoEntity> allTodosOfUserQueryable = await FilterTodos(filter).ConfigureAwait(false);
-                var allTodosOfuser = await allTodosOfUserQueryable.Where(a => a.DueDate.Date >= filter.FromDate.Date && a.DueDate.Date <= filter.ToDate.Date).OrderBy(a=>a.Status).ThenByDescending(b => b.PriorityLevel).ThenBy(a => a.DueDate).ToListAsync().ConfigureAwait(false);
+                var allTodosOfuser = await allTodosOfUserQueryable.Where(a => a.DueDate.Date >= filter.FromDate.Date && a.DueDate.Date <= filter.ToDate.Date).OrderBy(a => a.Status).ThenByDescending(b => b.PriorityLevel).ThenBy(a => a.DueDate).ToListAsync().ConfigureAwait(false);
                 var returnModel = new List<TodoDto>();
                 foreach (var todo in allTodosOfuser)
                 {
@@ -206,7 +206,7 @@ namespace ServiceModule.Service
                     DueDate = todo.DueDate,
                     PriorityLevel = todo.PriorityLevel,
                     CreatedBy = todo.CreatedByUser.Name,
-                    CreatedOn= todo.CreatedOn.ToString("yyyy-MM-dd")
+                    CreatedOn = todo.CreatedOn.ToString("yyyy-MM-dd")
                 };
 
             }
@@ -232,7 +232,7 @@ namespace ServiceModule.Service
                     await _todoHistoryRepo.InsertAsync(todoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
-                    var todoDetails = await GetTodoDetails(dto.TodoId).ConfigureAwait(false);
+                    var todoDetails = await GetTodoDetails(dto.TodoId, dto.UserId).ConfigureAwait(false);
                     return todoDetails;
                 }
                 catch (Exception ex)
@@ -259,7 +259,7 @@ namespace ServiceModule.Service
                     await _todoHistoryRepo.InsertAsync(sharedTodoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
-                    var todoDetails = await GetTodoDetails(dto.TodoId).ConfigureAwait(false);
+                    var todoDetails = await GetTodoDetails(dto.TodoId, dto.UserId).ConfigureAwait(false);
                     return todoDetails;
                 }
 
@@ -302,6 +302,94 @@ namespace ServiceModule.Service
                     throw;
                 }
 
+            }
+        }
+
+        public async Task<TodoDetailsDto> SetRemainder(string userId, int todoId, DateTime remainderOn)
+        {
+            using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var todo = await _todoRepo.GetById(todoId).ConfigureAwait(false) ?? throw new CustomException("Todo Not Found");
+                    var user = await _userRepo.GetByIdString(userId).ConfigureAwait(false) ?? throw new UserNotFoundException();
+                    var existingTodoRemainder = await _todoRemainderRepo.GetQueryable().Where(a => a.TodoId == todoId && a.SetById == userId && a.IsActive).FirstOrDefaultAsync().ConfigureAwait(false);
+                    if (existingTodoRemainder != null)
+                    {
+                        existingTodoRemainder.RemainderOn = remainderOn;
+                    }
+                    else
+                    {
+                        var todoRemainder = new TodoRemainder(todo, user, remainderOn);
+                        await _todoRemainderRepo.InsertAsync(todoRemainder).ConfigureAwait(false);
+
+                    }
+                    await _unitOfWork.CompleteAsync().ConfigureAwait(false);
+                    await tx.CommitAsync().ConfigureAwait(false);
+                    var response = await GetTodoDetails(todoId, userId).ConfigureAwait(false);
+                    return response;
+
+                }
+                catch (Exception ex)
+                {
+                    await tx.RollbackAsync().ConfigureAwait(false);
+                    throw;
+                }
+            }
+        }
+
+        public async Task<TodoDetailsDto> UnsetRemainder(string userId, int todoId)
+        {
+            using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var todo = await _todoRepo.GetById(todoId).ConfigureAwait(false) ?? throw new CustomException("Todo Not Found");
+                    if (todo.IsCompleted) throw new CustomException("Todo already completed");
+                    var todoRemainderOfUser = await _todoRemainderRepo.GetQueryable().Where(a => a.TodoId == todoId && a.SetById == userId && a.IsActive).FirstOrDefaultAsync().ConfigureAwait(false);
+                    if(todoRemainderOfUser !=null)
+                    {
+                        _todoRemainderRepo.Delete(todoRemainderOfUser);
+                        await _unitOfWork.CompleteAsync().ConfigureAwait(false);
+                    }
+                    await tx.CommitAsync().ConfigureAwait(false);
+                    var response = await GetTodoDetails(todoId, userId).ConfigureAwait(false);
+                    return response;
+
+                }
+                catch (Exception ex)
+                {
+                    await tx.RollbackAsync().ConfigureAwait(false);
+                    throw;
+                }
+            }
+
+        }
+
+        public async Task<List<string>> GetTodoRemainder(string userId)
+        {
+            using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(userId)) return new List<string>();
+                    var todoRemainders = await _todoRemainderRepo.GetQueryable().Where(a => a.IsActive && a.SetById == userId && a.RemainderOn <= DateTime.Now).ToListAsync().ConfigureAwait(false);
+                    var messages = new List<string>();
+                    foreach (var todo in todoRemainders)
+                    {
+                        todo.MarkAsComplete();
+                        var message = $"Reminder for Todo ({todo.Todo.Title}). Due date : {todo.Todo.DueDate.ToString("yyyy-MM-dd")}";
+                        messages.Add(message);
+                    }
+                    await _unitOfWork.CompleteAsync().ConfigureAwait(false);
+                    await tx.CommitAsync().ConfigureAwait(false);
+                    return messages;
+                }
+                catch (Exception)
+                {
+                    await tx.RollbackAsync().ConfigureAwait(false);
+                    return new List<string>();
+                }
             }
         }
     }

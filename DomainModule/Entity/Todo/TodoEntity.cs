@@ -48,6 +48,7 @@ namespace DomainModule.Entity
         public virtual User? CompletedByUser { get;protected set; }
         public virtual IList<SharedTodoEntity> SharedTodos { get;protected set; } = new List<SharedTodoEntity>();
         public virtual IList<TodoHistory> SharedTodoHistory { get; protected set; } = new List<TodoHistory>();
+        public virtual IList<TodoRemainder> TodoRemainder { get; protected set; } = new List<TodoRemainder>();
         public bool IsActive => Status == StatusActive;
         public bool IsCompleted => Status == StatusCompleted;
         public void MarkAsComplete(User completedBy)

@@ -22,5 +22,11 @@ namespace TodoApp.ViewModel
         public int TodoId { get; set; }
         public string Comment { get; set; }
     }
+    public class TodoRemainderViewModel {
+
+        public int TodoId { get; set; }
+        public DateTime RemainderOn { get; set; }
+    }
+
 
 }

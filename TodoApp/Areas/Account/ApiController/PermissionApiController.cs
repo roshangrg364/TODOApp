@@ -19,7 +19,7 @@ namespace TodoApp.Areas.Account.ApiController
         {
             _roleService = roleService;
         }
-        [Authorize(Policy = "Role-AssignPermission")]
+        [Authorize(Policy = "Permission-Assign")]
         [HttpPost("assign")]
         public async Task<IActionResult> AssignPermission([FromBody] PermissionAssignViewModel model)
         {
@@ -34,7 +34,7 @@ namespace TodoApp.Areas.Account.ApiController
             }
         }
 
-        [Authorize(Policy = "Role-UnAssignPermission")]
+        [Authorize(Policy = "Permission-UnAssign")]
         [HttpPost("un-assign")]
         public async Task<IActionResult> UnAssignPermission([FromBody] PermissionAssignViewModel model)
         {
@@ -48,7 +48,7 @@ namespace TodoApp.Areas.Account.ApiController
                 return BadRequest(new ResponseModel { Status = StatusType.error.ToString(), IsSuccess = true, Message = ex.Message });
             }
         }
-        [Authorize(Policy = "Role-AssignPermission")]
+        [Authorize(Policy = "Permission-Assign")]
         [HttpPost("assign-all")]
         public async Task<IActionResult> AssignAllPermissionOfModule([FromBody] ModuleAssignViewModel model)
         {
@@ -63,7 +63,7 @@ namespace TodoApp.Areas.Account.ApiController
             }
         }
 
-        [Authorize(Policy = "Role-UnAssignPermission")]
+        [Authorize(Policy = "Permission-UnAssign")]
         [HttpPost("unassign-all")]
         public async Task<IActionResult> UnAssignAllPermissionOfModule([FromBody]ModuleAssignViewModel model)
         {

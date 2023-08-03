@@ -29,12 +29,16 @@ namespace DomainModule.Dto
                         "View",
                         "Create",
                         "Update",
-                        "ViewPermission",
-                        "AssignPermission",
-                        "UnAssignPermission",
-                       
                     }
+                },
+            {
+                "Permission",new List<string>
+                {
+                        "View",
+                        "Assign",
+                        "UnAssign",
                 }
+            }
         };
 
 

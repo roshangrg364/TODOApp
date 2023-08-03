@@ -23,6 +23,7 @@
                             <th>Email</th>
                             <th>Username</th>
                             <th>Mobile Number</th>
+                            <th>Type</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -36,6 +37,7 @@
                                 <td>@user.EmailAddress</td>
                                 <td>@user.UserName</td>
                                 <td>@user.MobileNumber</td>
+                                <td>@user.Type</td>
                                 <td>@user.Status</td>
                                 <td>
                                     <a class="btn btn-info" asp-area="Account" asp-controller="User" asp-action="Edit" asp-route-id="@user.Id">Edit</a>

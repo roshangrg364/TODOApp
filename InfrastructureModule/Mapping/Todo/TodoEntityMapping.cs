@@ -27,6 +27,8 @@ namespace InfrastructureModule.Mapping
             builder.HasOne(a => a.CreatedByUser).WithMany().HasForeignKey(a => a.CreatedBy).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(a => a.CompletedByUser).WithMany().HasForeignKey(a => a.CompletedBy).OnDelete(DeleteBehavior.NoAction);
             builder.HasMany(a => a.SharedTodos).WithOne(a=>a.Todo).HasForeignKey(a => a.TodoId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasMany(a => a.SharedTodoHistory).WithOne(a=>a.Todo).HasForeignKey(a => a.TodoId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasMany(a => a.TodoRemainder).WithOne(a=>a.Todo).HasForeignKey(a => a.TodoId).OnDelete(DeleteBehavior.NoAction);
            
         }
     }

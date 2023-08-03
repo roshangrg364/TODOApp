@@ -18,7 +18,7 @@ namespace TodoApp.Areas.Account.Controllers
             _roleService = roleService;
         }
 
-        [Authorize(Policy = "Role-ViewPermission")]
+        [Authorize(Policy = "Permission-View")]
         public async Task<IActionResult> Index(string RoleId)
         {
             try
@@ -48,7 +48,7 @@ namespace TodoApp.Areas.Account.Controllers
            
         }
 
-        [Authorize(Policy = "Role-ViewPermission")]
+        [Authorize(Policy = "Permission-View")]
         public async Task<IActionResult> LoadPermissionView(string RoleId)
         {
             try

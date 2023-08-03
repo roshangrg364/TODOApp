@@ -77,7 +77,8 @@ namespace DomainModule.Dto
         public DateTime CreatedOn { get; set; }
         public DateTime? ModifiedOn { get; set; }
         public DateTime? CompletedOn { get; set; }
-        public List<string> EligibleUsersToTakeActionOnTodo { get; set; }
+        public bool HasSetRemainder { get; set; }
+        public bool IsEligible { get; set; }
         public string CompletedBy { get; set; }
         public List<TodoHistoryDto> SharedTodoHistory { get; set; } = new List<TodoHistoryDto>();
     }

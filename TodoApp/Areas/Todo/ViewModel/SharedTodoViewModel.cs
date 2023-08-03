@@ -53,6 +53,7 @@ namespace TodoApp.ViewModel
         public string CreatedBy { get; set; }
         public bool IsTodoCreator { get; set; }
         public bool IsEligible { get; set; }
+        public bool HasRemainderSet { get; set; }
         public string? Description { get; set; }
         public string PriorityLevel { get; set; }
         public DateTime DueDate { get; set; }

@@ -83,13 +83,13 @@ namespace TodoApp.Areas.Account.Controllers
                     Password = model.Password,
                     UserName = model.UserName,
                     Type = DomainModule.Entity.User.TypeGeneral,
-                    CurrentSiteDomain = $"{Request.Scheme}://{Request.Host}",
-                    Roles = model.Roles
+                    Roles = model.Roles,
+                    IsEmailConfirmed = true
                 };
                 var userReponse = await _userService.Create(createDto);
 
-                _notify.AddSuccessToastMessage("created succesfully. Please Confirm your account");
-                return RedirectToAction("ConfirmEmailPage", "Account", new { area = "Account", confirmationLink = userReponse.EmailConfirmationLink });
+                _notify.AddSuccessToastMessage("Created Succesfully. Please Confirm Your Account");
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {

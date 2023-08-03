@@ -40,7 +40,7 @@ namespace ServiceModule.Service
                 {
                     var user = await _userRepo.GetByIdString(id).ConfigureAwait(false) ?? throw new UserNotFoundException();
                     user.Activate();
-                     _userRepo.Update(user);
+                    _userRepo.Update(user);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
                 }
@@ -49,12 +49,12 @@ namespace ServiceModule.Service
                     await tx.RollbackAsync().ConfigureAwait(false);
                     throw;
                 }
-               
+
             }
 
         }
 
-      
+
         public async Task<UserResponseDto> Create(UserDto dto)
         {
             using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
@@ -65,22 +65,27 @@ namespace ServiceModule.Service
                     var user = new User(dto.Name, dto.UserName, dto.EmailAddress, dto.Type)
                     {
                         PhoneNumber = dto.MobileNumber,
+                        EmailConfirmed = dto.IsEmailConfirmed
                     };
                     var result = await _userManager.CreateAsync(user, dto.Password).ConfigureAwait(false);
                     var userReponseModel = new UserResponseDto() { UserId = user.Id };
                     if (result.Succeeded)
                     {
-
-                        foreach (var roleId in dto.Roles)
+                        if (dto.Roles != null)
                         {
-                            var role = await _roleManager.FindByIdAsync(roleId).ConfigureAwait(false) ?? throw new RoleNotFoundException();
-                            await _userManager.AddToRoleAsync(user, role.Name).ConfigureAwait(false);
+                            foreach (var roleId in dto.Roles)
+                            {
+                                var role = await _roleManager.FindByIdAsync(roleId).ConfigureAwait(false) ?? throw new RoleNotFoundException();
+                                await _userManager.AddToRoleAsync(user, role.Name).ConfigureAwait(false);
+                            }
                         }
 
-                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
-                        var emailConfirmationLink = $"{dto.CurrentSiteDomain}/Account/Account/ConfirmEmail?email={user.Email}&token={System.Web.HttpUtility.UrlEncode(token)}";
-                        userReponseModel.EmailConfirmationLink = emailConfirmationLink;
-                      
+                        if (!dto.IsEmailConfirmed)
+                        {
+                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
+                            var emailConfirmationLink = $"{dto.CurrentSiteDomain}/Account/Account/ConfirmEmail?email={user.Email}&token={System.Web.HttpUtility.UrlEncode(token)}";
+                            userReponseModel.EmailConfirmationLink = emailConfirmationLink;
+                        }
 
                     }
                     else
@@ -101,19 +106,19 @@ namespace ServiceModule.Service
                     throw;
                 }
             }
-            
+
         }
 
-     
+
         public async Task Deactivate(string id)
         {
-            using(var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+            using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
             {
                 try
                 {
                     var user = await _userRepo.GetByIdString(id).ConfigureAwait(false) ?? throw new UserNotFoundException();
                     user.Deactivate();
-                  _userRepo.Update(user);
+                    _userRepo.Update(user);
                     await _unitOfWork.CompleteAsync();
                     await tx.CommitAsync().ConfigureAwait(false);
                 }
@@ -123,7 +128,7 @@ namespace ServiceModule.Service
                     throw;
                 }
             }
-           
+
         }
 
         public async Task Edit(UserEditDto dto)
@@ -164,7 +169,7 @@ namespace ServiceModule.Service
             }
         }
 
-      
+
 
         private async Task ValidateUser(string mobile, string email, User? user = null)
         {

@@ -13,6 +13,9 @@ namespace DomainModule.Dto
         public long TotalSharedTodoCount { get; set; }
         public long TotalActiveTodoCount { get; set; }
         public long TotalCompletedTodo { get; set; }
+        public long TotalHighPriorityTodo{ get; set; }
+        public long TotalMediumPriorityTodo{ get; set; }
+        public long TotalLowPriorityTodo{ get; set; }
         public List<int> TotalTodosEachMonth { get; set; } = new List<int>();
        
     }

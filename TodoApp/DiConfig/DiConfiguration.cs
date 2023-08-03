@@ -25,6 +25,7 @@ namespace TodoApp.DiConfig
          services.AddScoped<TodoRepositoryInterface,TodoRepository>();
          services.AddScoped<SharedTodoRepositoryInterface,SharedTodoRepository>();
          services.AddScoped<TodoHistoryRepositoryInterface,TodoHistoryRepository>();
+         services.AddScoped<TodoRemainderRepositoryInterface,TodoRemainderRepository>();
         }
         private static void UseService(IServiceCollection services)
         {

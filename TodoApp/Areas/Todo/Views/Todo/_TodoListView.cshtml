@@ -8,6 +8,7 @@
     <thead>
         <tr>
             <th scope="col">S.No</th>
+            <th scope="col">CreatedBy</th>
             <th scope="col">Title</th>
             <th scope="col">Priority</th>
             <th scope="col">Due Date</th>
@@ -22,9 +23,12 @@
             foreach (var item in Model)
             {
                 <tr class="fw-normal">
-                    <th>
+                    <td>
                         <span class="ms-2">@i</span>
-                    </th>
+                    </td>
+                    <td class="align-middle">
+                        <span>@item.CreatedByUser</span>
+                    </td>
                     <td class="align-middle">
                         <span>@item.Title</span>
                     </td>

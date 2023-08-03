@@ -1,5 +1,6 @@
 ﻿using DomainModule.Dto;
 using DomainModule.Entity;
+using DomainModule.Enums;
 using DomainModule.Exceptions;
 using DomainModule.RepositoryInterface;
 using DomainModule.ServiceInterface;
@@ -53,6 +54,9 @@ namespace ServiceModule.Service
                 var totalActiveTodos = 0;
                 var totalCompletedTodos = 0;
                 var totalSharedTodos = 0;
+                var totalHighPriorityTodo = 0;
+                var totalMidPriorityTodo = 0;
+                var totalLowPriorityTodo = 0;
                 if (!user.IsSuperAdmin)
                 {
                     todoQuerable = todoQuerable.Where(a => a.CreatedBy == userId);
@@ -63,7 +67,9 @@ namespace ServiceModule.Service
                 totalActiveTodos = await todoQuerable.Where(a => a.Status == TodoEntity.StatusActive).CountAsync().ConfigureAwait(false);
                 totalCompletedTodos = await todoQuerable.Where(a => a.Status == TodoEntity.StatusCompleted).CountAsync().ConfigureAwait(false);
                 totalSharedTodos = await sharedTodoQueryable.CountAsync().ConfigureAwait(false);
-
+                totalHighPriorityTodo = await todoQuerable.Where(a => a.Status == TodoEntity.StatusActive && a.PriorityLevel == (int)TodoPriorityEnum.High).CountAsync().ConfigureAwait(false);
+                totalMidPriorityTodo = await todoQuerable.Where(a => a.Status == TodoEntity.StatusActive && a.PriorityLevel == (int)TodoPriorityEnum.Medium).CountAsync().ConfigureAwait(false);
+                totalLowPriorityTodo = await todoQuerable.Where(a => a.Status == TodoEntity.StatusActive && a.PriorityLevel == (int)TodoPriorityEnum.Low).CountAsync().ConfigureAwait(false);
                 var monthwiseTodosCountsOfThisYear = await todoQuerable.Where(a => a.CreatedOn.Year == DateTime.Now.Year).GroupBy(m => m.CreatedOn.Month).ToListAsync();
                 foreach (var data in monthwiseTodosCountsOfThisYear)
                 {
@@ -78,6 +84,9 @@ namespace ServiceModule.Service
                     TotalSharedTodoCount = totalSharedTodos,
                     TotalTodoCount = totalTodos,
                     TotalUser = totalUser,
+                    TotalHighPriorityTodo = totalHighPriorityTodo,
+                    TotalLowPriorityTodo = totalLowPriorityTodo,
+                    TotalMediumPriorityTodo = totalMidPriorityTodo,
                     TotalTodosEachMonth = monthDictionary.Select(a => a.Value).ToList(),
                 };
                 return dashboardData;

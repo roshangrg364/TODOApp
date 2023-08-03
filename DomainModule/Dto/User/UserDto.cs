@@ -13,7 +13,8 @@ namespace DomainModule.Dto.User
         public string MobileNumber { get; set; }
         public string Type { get; set; }
         public List<string> Roles { get; set; } = new List<string>();
-        public string CurrentSiteDomain { get; set; } 
+        public string CurrentSiteDomain { get; set; }
+        public bool IsEmailConfirmed { get; set; }
     }
     public class UserEditDto
     {

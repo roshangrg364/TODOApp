@@ -15,8 +15,10 @@ namespace DomainModule.ServiceInterface
         Task<List<TodoDto>> GetAllTodosOfUser(TodoFilterDto filter);
         Task<TodoDetailsDto> MarkAsComplete(TodoHistoryCreateDto dto);
         Task<TodoResponseDto> GetById(int todoId);
-        Task<TodoDetailsDto> GetTodoDetails(int todoId);
+        Task<TodoDetailsDto> GetTodoDetails(int todoId,string userId);
         Task<TodoDetailsDto> CommentOnTodo(TodoHistoryCreateDto dto);
-
+        Task<TodoDetailsDto> SetRemainder(string userId,int todoId,DateTime remainderOn);
+        Task<TodoDetailsDto> UnsetRemainder(string userId,int todoId);
+        Task<List<string>> GetTodoRemainder(string userId);
     }
 }

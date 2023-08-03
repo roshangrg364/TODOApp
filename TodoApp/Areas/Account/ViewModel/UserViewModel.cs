@@ -35,8 +35,8 @@ namespace TodoApp.ViewModel
         [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid mobile number")]
         public string MobileNumber { get; set; }
 
-        [Required]
-        public List<string> Roles { get; set; }
+
+        public List<string> Roles { get; set; } = new List<string>();
 
     }
 

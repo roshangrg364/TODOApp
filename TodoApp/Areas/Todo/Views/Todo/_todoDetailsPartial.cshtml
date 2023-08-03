@@ -9,6 +9,50 @@
 
             <h2>Todo Details</h2>
         </div>
+
+        <div class="pull-right reminderDiv" style="float:right">
+            @if (Model.Status == TodoEntity.StatusActive && Model.IsEligible)
+            {
+                @if (Model.HasRemainderSet)
+                {
+                    <a class="unset-remainder" data-todoId="@Model.Id"><i class="fa fa-clock fa-lg" style="color:lightcoral"></i> unset reminder</a>
+                }
+                else
+                {
+                    <a data-toggle="modal" data-target="#RemainderModel"><i class="fa fa-clock fa-lg"></i> set reminder</a>
+                    <div class="modal fade" id="RemainderModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Set Reminder</h5>
+                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="control-label">Reminder On</label>
+                                                <input id="RemainderDate" type="datetime-local" class="form-control form-control-user" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                    <a class="btn btn-primary" data-todoId="@Model.Id" id="set-remainder">Set Remainder</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+
         <dl class="dl-horizontal">
             <dt>Status:</dt>
 
@@ -70,25 +114,18 @@
                         foreach (var history in Model.SharedTodoHistory)
                         {
                             <div class="feed-element">
-                               
+
                                 <div class="media-body ">
                                     <small class="pull-right"> Created On: @history.CreatedOn.ToString("yyyy-MM-dd")</small><br>
-                                    @if(history.Status == TodoHistory.StatusShared)
-                                    {
-                                        <strong>Todo @history.Status to @history.CommentedBy</strong>
 
-                                    }
-                                    else
-                                    {
-                                        <strong>Todo @history.Status by @history.CommentedBy</strong>
+                                    <strong>Todo @history.Status by @history.CommentedBy</strong>
 
-                                    }
-                                        <br />
-                                   
+                                    <br />
+
 
                                     <small class="text-muted">Due Date : @Model.DueDate.ToString("yyyy-MM-dd")</small>
                                     <div>
-                                      comment:  @Html.Raw(history.Comment)
+                                        comment:  @Html.Raw(history.Comment)
                                     </div>
                                 </div>
                             </div>

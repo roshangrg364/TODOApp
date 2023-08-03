@@ -1,22 +1,27 @@
 function loadDashboardData() {
-    blockwindow();
+
     $.ajax({
         url: '/api/dashboard/',
         type: "get",
         success: function (data) {
             if (data) {
-                console.log(data)
                 const totalUserElm = $("#total-users")
                 const totalTodosElm = $("#total-todos")
                 const totalActiveTodos = $("#active-todos")
                 const totalCompletedTodos = $("#completed-todos")
                 const totalSharedTodos = $("#shared-todos")
+                const totalhighPriorityTodos = $("#high-priority-todos")
+                const totalMediumPriorityTodos = $("#medium-priority-todos")
+                const totalLowPriorityTodos = $("#low-priority-todos")
 
                 if (totalUserElm) totalUserElm.text(data.Data.TotalUser)
                 if (totalTodosElm) totalTodosElm.text(data.Data.TotalTodoCount)
                 if (totalActiveTodos) totalActiveTodos.text(data.Data.TotalActiveTodoCount)
                 if (totalCompletedTodos) totalCompletedTodos.text(data.Data.TotalCompletedTodo)
                 if (totalSharedTodos) totalSharedTodos.text(data.Data.TotalSharedTodoCount)
+                if (totalhighPriorityTodos) totalhighPriorityTodos.text(data.Data.TotalHighPriorityTodo)
+                if (totalMediumPriorityTodos) totalMediumPriorityTodos.text(data.Data.TotalMediumPriorityTodo)
+                if (totalLowPriorityTodos) totalLowPriorityTodos.text(data.Data.TotalLowPriorityTodo)
 
                 //load piechart
                 var ctx = document.getElementById("myPieChart");
@@ -145,14 +150,14 @@ function loadDashboardData() {
                         }
                     });
                 }
-
             }
         },
         error: function (errRespons) {
             console.log(errRespons)
+           
         }
     })
-    unblockwindow();
+   
 }
 
 
@@ -173,3 +178,23 @@ function shownotification(status, message, title="Notification!") {
         timer: 1500
     });
 }
+
+
+function loadRemainderNotification() {
+
+    $.ajax({
+        url: '/api/todo/todo-remainder',
+        type: "get",
+        success: function (data) {
+            if (data.IsSuccess == true) {
+                const notificationDiv = document.querySelector(".signalRMessage");
+                notificationDiv.innerHTML = data.Data;
+                $('#SignalRNotification').modal('show');
+            }
+        },
+        error: function (errRespons) {
+            console.log(errRespons)
+        }
+    })
+}
+

@@ -8,6 +8,23 @@ namespace DomainModule.Entity
 {
     public class TodoRemainder
     {
+        protected TodoRemainder()
+        {
+            
+        }
+        public TodoRemainder(TodoEntity todo,User setBy,DateTime remainderOn)
+        {
+            Todo = todo;
+            SetBy = setBy;
+            RemainderOn = remainderOn;
+            IsActive = true;
+            CreatedOn = DateTime.Now;
+        }
+
+        public void MarkAsComplete()
+        {
+            IsActive = false;
+        }
         public int Id { get;protected set; }
         public int TodoId { get;protected set; }
         public virtual TodoEntity Todo { get;protected set; }

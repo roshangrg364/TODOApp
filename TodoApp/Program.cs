@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Newtonsoft.Json;
 using NToastNotify;
 using TodoApp.AuthenticationAuthorization;
+using TodoApp.CronJob;
 using TodoApp.CustomTokenProvider;
 using TodoApp.DefaultDataSeeder;
 using TodoApp.DiConfig;
@@ -75,6 +76,11 @@ builder.Services.Configure<CookiePolicyOptions>(
            );
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSignalR();
+builder.Services.AddCronJob<NotifyCronJob>(c =>
+{
+    c.TimeZoneInfo = TimeZoneInfo.Local;
+    c.CronExpression = @"*/1 * * * *";
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

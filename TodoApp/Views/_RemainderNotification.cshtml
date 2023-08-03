@@ -1,0 +1,11 @@
+﻿@model List<string>
+@{
+    Layout = null;
+}
+
+@foreach(var data in Model)
+{
+    <div class="alert alert-primary" role="alert">
+       @data
+    </div>
+}
