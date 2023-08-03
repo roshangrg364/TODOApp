@@ -9,14 +9,14 @@
 - Permission Based Authorization. Superadmin can create user and assign them roles to manage their user.
 - Todo Creation, Report of Active, Completed and Shared Todo.
 - Ability to share todo with other users.
-- Real Time Dahboard update and notification on sharing todp.
+- Real Time Dahboard update and notification on sharing todo.
 - Ability to comment on todo to create a conversation between shared user
 - History of todo workflow.
 
 ## System Requirements
 - visual studio 2022
 - dot net core 7
-- SQl Server
+- SQl Server 2017 and above
 
 ## Architecture, pattern ,technologies used
 - App is made using clean architecture .
