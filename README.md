@@ -64,7 +64,8 @@
    - On delete all the data related to the todo will be deleted.
 
   #### How to complete todo?
-    - User whom the todo is shared and the creator are accessible to close todo.. user can place a comment and click on close todo to complete the todo
+    - User whom the todo is shared and the creator are accessible to close todo.
+     - User can place a comment and click on close todo to complete the todo
 
 
 # Have Fun !!
