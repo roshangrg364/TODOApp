@@ -42,7 +42,7 @@ namespace ServiceModule.Service
                     User user = await ValidateTodo(dto, todo).ConfigureAwait(false);
                     var sharedTodoEntity = new SharedTodoEntity(todo, user);
                     var comment = $"Todo Shared By {todo.CreatedByUser.Name} to {user.Name} <br/> Comment: {dto.Description}";
-                    var sharedTodoHistory = AddSharedTodoHistory(todo, user, comment, TodoHistory.StatusShared);
+                    var sharedTodoHistory = AddSharedTodoHistory(todo, todo.CreatedByUser, comment, TodoHistory.StatusShared);
                     await _sharedTodoRepo.InsertAsync(sharedTodoEntity).ConfigureAwait(false);
                     await _todoHistoryRepo.InsertAsync(sharedTodoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);

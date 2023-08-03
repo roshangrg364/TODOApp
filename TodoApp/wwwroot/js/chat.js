@@ -3,17 +3,16 @@
 var connection = new signalR.HubConnectionBuilder().withUrl("/TodoHub").build();
 
 
-connection.on("ReceiveMessage", function (user, message) {
+
+
+connection.on("NotifyUserAndRefreshDashboard", function (message) {
+    loadDashboardData();
     document.querySelector(".signalRMessage").innerHTML = message;
     $('#SignalRNotification').modal('show');
 });
 
-connection.on("RefereshDashboard", function () {
-    loadDashboardData();
-});
-
 connection.start().then(function () {
-  
+
 }).catch(function (err) {
     return console.error(err.toString());
 });

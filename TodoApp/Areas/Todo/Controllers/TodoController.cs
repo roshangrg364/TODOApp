@@ -3,6 +3,7 @@ using DomainModule.Entity;
 using DomainModule.Enums;
 using DomainModule.RepositoryInterface;
 using DomainModule.ServiceInterface;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
@@ -12,6 +13,7 @@ using TodoApp.Areas.Todo.ViewModel;
 using TodoApp.Extensions;
 using TodoApp.SignalR;
 using TodoApp.ViewModel;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TodoApp.Areas.Todo.Controllers
 {
@@ -22,18 +24,20 @@ namespace TodoApp.Areas.Todo.Controllers
         private readonly TodoServiceInterface _todoService;
         private readonly SharedTodoServiceInterface _sharedTodoService;
         private readonly IToastNotification _notify;
+        private readonly UserManager<User> _userManager;
 
         private readonly IHubContext<TodoHub> _hub;
         public TodoController(ILogger<TodoController> logger,
             TodoServiceInterface todoService, IToastNotification notify,
             SharedTodoServiceInterface sharedTodoService,
-            IHubContext<TodoHub> hub)
+            IHubContext<TodoHub> hub, UserManager<User> userManager)
         {
             _logger = logger;
             _todoService = todoService;
             _notify = notify;
             _sharedTodoService = sharedTodoService;
             _hub = hub;
+            _userManager = userManager;
         }
         public async Task<IActionResult> Index(TodoIndexViewModel model)
         {
@@ -184,6 +188,7 @@ namespace TodoApp.Areas.Todo.Controllers
                     PriorityLevel = todo.PriorityLevel,
                     Description = todo.Description,
                     DueDate = todo.DueDate,
+                    Title =todo.Title
                 };
 
                 return View(todoEditViewModel);
@@ -312,10 +317,14 @@ namespace TodoApp.Areas.Todo.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var sharedTodoCreateDto = new SharedTodoCreateDto(model.Email, model.TodoId, model.Description, this.GetCurrentUserId());
+                    var currentUser = await this.GetCurrentUser();
+                    var sharedTodoCreateDto = new SharedTodoCreateDto(model.Email, model.TodoId, model.Description, currentUser.Id);
                     await _sharedTodoService.Create(sharedTodoCreateDto);
                     _notify.AddSuccessToastMessage("Todo shared Successfully");
-                    await _hub.Clients.All.SendAsync("RefereshDashboard").ConfigureAwait(true);
+                    var connections = TodoHub._connections;
+                    var sharedToUser = await _userManager.FindByEmailAsync(model.Email).ConfigureAwait(false);
+                    var message = $"Hello, {sharedToUser.Name} a todo have been shared to you by {currentUser.Name}";
+                    await BroadCastMessage(connections, sharedToUser, message);
                     return RedirectToAction(nameof(ViewDetail), new { todoId = model.TodoId });
                 }
                 else
@@ -330,6 +339,15 @@ namespace TodoApp.Areas.Todo.Controllers
                 _notify.AddErrorToastMessage(ex.Message);
             }
             return View(model);
+        }
+
+        private async Task BroadCastMessage(ConnectionMapping<string> connections, User? sharedToUser, string message)
+        {
+            var connectionIdOfSharedUser = connections.GetConnections(sharedToUser.UserName).FirstOrDefault();
+            if (!string.IsNullOrEmpty(connectionIdOfSharedUser))
+            {
+                await _hub.Clients.Client(connectionIdOfSharedUser).SendAsync("NotifyUserAndRefreshDashboard", message);
+            }
         }
     }
 }

@@ -5,12 +5,8 @@ namespace TodoApp.SignalR
 {
     public class TodoHub : Hub
     {
-        private readonly TodoServiceInterface _todoService;
-        public TodoHub(TodoServiceInterface todoService)
-        {
-            _todoService = todoService;
-        }
-        private readonly static ConnectionMapping<string> _connections =
+        
+        public readonly static ConnectionMapping<string> _connections =
              new ConnectionMapping<string>();
 
         public void SendChatMessage(string userId)
