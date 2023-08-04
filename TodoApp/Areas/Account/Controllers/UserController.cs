@@ -83,7 +83,7 @@ namespace TodoApp.Areas.Account.Controllers
                     Password = model.Password,
                     UserName = model.UserName,
                     Type = DomainModule.Entity.User.TypeGeneral,
-                    Roles = model.Roles,
+                    Roles = model.Roles ?? new List<string>(),
                     IsEmailConfirmed = true
                 };
                 var userReponse = await _userService.Create(createDto);
@@ -143,7 +143,7 @@ namespace TodoApp.Areas.Account.Controllers
                     EmailAddress = model.EmailAddress,
                     MobileNumber = model.MobileNumber,
                     UserName = model.UserName,
-                    Roles = model.Roles
+                    Roles = model.Roles?? new List<string>()
                 };
                 await _userService.Edit(editDto);
 

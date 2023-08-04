@@ -44,10 +44,8 @@
                            
                             <div class="form-group">
                                 <label>Roles *</label>
-                             
-                                <select asp-for="Roles" class="form-control" asp-items="ViewBag.RoleList" multiple></select>
-                                @Html.ValidationMessageFor(a=>a.Roles,"",new{@class="text-danger"})
-
+                                @Html.ListBoxFor(a=>a.Roles,(SelectList)ViewBag.RoleList,new{@class="form-control Roles",data_val=false})
+                                
                             </div>
 
                             <button type="submit" class="btn btn-primary">
@@ -64,3 +62,14 @@
     </div>
 
 </div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function(){
+            $('.Roles').select2({
+                placeholder: 'Select an option'
+            });
+        })
+    </script>
+}

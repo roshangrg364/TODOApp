@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TodoApp.ViewModel
 {
@@ -34,9 +35,8 @@ namespace TodoApp.ViewModel
         [Phone]
         [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid mobile number")]
         public string MobileNumber { get; set; }
-
-
-        public List<string> Roles { get; set; } = new List<string>();
+        [AllowNull]
+        public List<string?> Roles { get; set; } = new List<string?>();
 
     }
 
@@ -55,9 +55,8 @@ namespace TodoApp.ViewModel
         [Phone]
         [DataType(DataType.PhoneNumber, ErrorMessage = "Invalid mobile number")]
         public string MobileNumber { get; set; }
-
-        [Required]
-        public List<string> Roles { get; set; }
+        [AllowNull]
+        public List<string?> Roles { get; set; } = new List<string?>();
 
     }
 
