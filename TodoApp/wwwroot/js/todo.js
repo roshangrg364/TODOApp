@@ -14,7 +14,8 @@
         data: JSON.stringify(data),
         success: function (data) {
             if (data.IsSuccess == true) {
-                $("#main-content").html(data.Data)
+                const divToAppend = document.querySelector(".feed-activity-list");
+                divToAppend.innerHTML += data.Data;
                 const comment = $("#Comment");
                 comment.val("")
                 shownotification(data.Status, data.Message)
@@ -125,7 +126,10 @@ $(document).on("click", "#set-remainder", function (e) {
         data: JSON.stringify(data),
         success: function (data) {
             if (data.IsSuccess == true) {
-                $("#main-content").html(data.Data)
+                const unSetReminderDiv = document.querySelector(".unset-remainder");
+                const setReminderDiv = document.querySelector(".set-reminder");
+                unSetReminderDiv.classList.remove("hidden");
+                setReminderDiv.classList.add("hidden");
                 $("#RemainderModel").modal("hide")
                 $('.modal-backdrop').remove();
                 $('body').removeClass('modal-open');
@@ -135,7 +139,7 @@ $(document).on("click", "#set-remainder", function (e) {
             else {
                 shownotification(data.Status, data.Message)
             }
-            
+
         },
         error: function (response) {
 
@@ -151,11 +155,14 @@ $(document).on("click", ".unset-remainder", function (e) {
     const todoId = $(this).attr("data-todoId");
     blockwindow()
     $.ajax({
-        url: "/api/todo/unset-remainder/"+todoId,
+        url: "/api/todo/unset-remainder/" + todoId,
         type: "put",
         success: function (data) {
             if (data.IsSuccess == true) {
-                $("#main-content").html(data.Data)
+                const unSetReminderDiv = document.querySelector(".unset-remainder");
+                const setReminderDiv = document.querySelector(".set-reminder");
+                unSetReminderDiv.classList.add("hidden");
+                setReminderDiv.classList.remove("hidden");
                 shownotification(data.Status, data.Message)
             }
             else {

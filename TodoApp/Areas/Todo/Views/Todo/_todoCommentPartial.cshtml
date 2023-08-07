@@ -1,0 +1,19 @@
+﻿@model TodoHistoryViewModel
+@{
+    Layout = null;
+}
+<div class="feed-element">
+
+    <div class="media-body ">
+        <small class="pull-right"> Created On: @Model.CreatedOn.ToString("yyyy-MM-dd")</small><br>
+
+        <strong>Todo @Model.Status by @Model.CommentedBy</strong>
+
+        <br />
+
+
+        <div>
+            comment:  @Html.Raw(Model.Comment)
+        </div>
+    </div>
+</div>

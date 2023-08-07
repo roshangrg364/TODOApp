@@ -12,8 +12,35 @@ connection.on("NotifyUserAndRefreshDashboard", function (message) {
 });
 
 connection.on("ShowRemainder", function () {
+loadRemainderNotification();
+});
 
-    loadRemainderNotification();
+connection.on("RefreshTodoComment", function (message,notificationMessage,commentedTodoId) {
+    const divToAppend = document.querySelector(".feed-activity-list");
+    if (divToAppend) {
+        const todoId = divToAppend.getAttribute('data-todoId')
+        if (todoId == commentedTodoId) {
+            divToAppend.innerHTML += message;
+        }
+    }
+   
+    document.querySelector(".signalRMessage").innerHTML = notificationMessage;
+    $('#SignalRNotification').modal('show');
+});
+
+connection.on("CompleteTodo", function (message, notificationMessage, commentedTodoId) {
+    const divToAppend = document.querySelector("#main-content");
+    if (divToAppend) {
+        const todoId = divToAppend.getAttribute('data-todoId')
+        if (todoId == commentedTodoId) {
+            divToAppend.innerHTML = message;
+            document.querySelector(".commentDiv").classList.add("hidden")
+            document.querySelector(".reminderDiv").classList.add("hidden")
+        }
+    }
+   
+    document.querySelector(".signalRMessage").innerHTML = notificationMessage;
+    $('#SignalRNotification').modal('show');
 });
 
 connection.start().then(function () {

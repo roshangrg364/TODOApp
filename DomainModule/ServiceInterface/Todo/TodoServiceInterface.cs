@@ -1,4 +1,5 @@
 ﻿using DomainModule.Dto;
+using DomainModule.Dto.Todo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,12 @@ namespace DomainModule.ServiceInterface
         Task Update(TodoEditDto dto);
         Task Delete(int todoId);
         Task<List<TodoDto>> GetAllTodosOfUser(TodoFilterDto filter);
-        Task<TodoDetailsDto> MarkAsComplete(TodoHistoryCreateDto dto);
+        Task<TodoCompleteDto> MarkAsComplete(TodoHistoryCreateDto dto);
         Task<TodoResponseDto> GetById(int todoId);
         Task<TodoDetailsDto> GetTodoDetails(int todoId,string userId);
-        Task<TodoDetailsDto> CommentOnTodo(TodoHistoryCreateDto dto);
-        Task<TodoDetailsDto> SetRemainder(string userId,int todoId,DateTime remainderOn);
-        Task<TodoDetailsDto> UnsetRemainder(string userId,int todoId);
+        Task<SharedTodoUserAndLatestCommentDto> CommentOnTodo(TodoHistoryCreateDto dto);
+        Task SetRemainder(string userId,int todoId,DateTime remainderOn);
+        Task UnsetRemainder(string userId,int todoId);
         Task<List<string>> GetTodoRemainder(string userId);
     }
 }

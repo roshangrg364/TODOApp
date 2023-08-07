@@ -161,7 +161,7 @@
             <div class="wrapper wrapper-content animated fadeInUp">
                 <div class="ibox">
                     <div class="ibox-content">
-                        <div id="main-content">
+                        <div id="main-content"  data-todoId ="@Model.Id">
                             @await Html.PartialAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", Model)
                         </div>
                         @if (Model.Status == TodoEntity.StatusActive && Model.IsEligible)

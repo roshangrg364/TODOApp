@@ -1,4 +1,5 @@
 ﻿using DomainModule.Dto;
+using DomainModule.Dto.Todo;
 using DomainModule.Entity;
 using DomainModule.Enums;
 using DomainModule.Exceptions;
@@ -96,7 +97,7 @@ namespace ServiceModule.Service
                     await _todoRepo.InsertAsync(todo).ConfigureAwait(false);
 
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
-                    var todoHistory = AddSharedTodoHistory(todo, user, $"Todo Created By {user.Name}", TodoHistory.StatusOpened);
+                    var todoHistory = AddTodoHistory(todo, user, $"Todo Created By {user.Name}", TodoHistory.StatusOpened);
                     await _todoHistoryRepo.InsertAsync(todoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync();
@@ -122,6 +123,7 @@ namespace ServiceModule.Service
                     var todoHistory = todo.SharedTodoHistory.ToList();
                     _todoHistoryRepo.DeleteRange(todoHistory);
                     _sharedTodoRepo.DeleteRange(todo.SharedTodos.ToList());
+                    _todoRemainderRepo.DeleteRange(todo.TodoRemainder.ToList());
                     _todoRepo.Delete(todo);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
@@ -217,7 +219,7 @@ namespace ServiceModule.Service
             }
         }
 
-        public async Task<TodoDetailsDto> MarkAsComplete(TodoHistoryCreateDto dto)
+        public async Task<TodoCompleteDto> MarkAsComplete(TodoHistoryCreateDto dto)
         {
             using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
             {
@@ -227,13 +229,19 @@ namespace ServiceModule.Service
                     ValidateTodo(todo);
                     var user = await _userRepo.GetByIdString(dto.UserId).ConfigureAwait(false) ?? throw new UserNotFoundException();
                     todo.MarkAsComplete(user);
-                    var todoHistory = AddSharedTodoHistory(todo, user, dto.Comment, TodoHistory.StatusClosed);
+                    var todoHistory = AddTodoHistory(todo, user, dto.Comment, TodoHistory.StatusClosed);
                     _todoRepo.Update(todo);
                     await _todoHistoryRepo.InsertAsync(todoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
                     var todoDetails = await GetTodoDetails(dto.TodoId, dto.UserId).ConfigureAwait(false);
-                    return todoDetails;
+                    List<string> sharedTodoUsers = GetAllUserWhomTodoIsSharedExceptTheCurrentUser(todo, user);
+
+                    return new TodoCompleteDto { 
+                    SharedTodoUsersList = sharedTodoUsers,
+                    TodoDetails = todoDetails
+                    };
+
                 }
                 catch (Exception ex)
                 {
@@ -245,7 +253,7 @@ namespace ServiceModule.Service
 
         }
 
-        public async Task<TodoDetailsDto> CommentOnTodo(TodoHistoryCreateDto dto)
+        public async Task<SharedTodoUserAndLatestCommentDto> CommentOnTodo(TodoHistoryCreateDto dto)
         {
             using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
             {
@@ -255,12 +263,23 @@ namespace ServiceModule.Service
                     if (todo.IsCompleted) throw new CustomException("Todo already completed");
                     var user = await _userRepo.GetByIdString(dto.UserId).ConfigureAwait(false) ?? throw new UserNotFoundException();
                     if (string.IsNullOrEmpty(dto.Comment)) throw new CustomException("Comment is required");
-                    var sharedTodoHistory = AddSharedTodoHistory(todo, user, dto.Comment, TodoHistory.StatusCommented);
+                    var sharedTodoHistory = AddTodoHistory(todo, user, dto.Comment, TodoHistory.StatusCommented);
                     await _todoHistoryRepo.InsertAsync(sharedTodoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
-                    var todoDetails = await GetTodoDetails(dto.TodoId, dto.UserId).ConfigureAwait(false);
-                    return todoDetails;
+                    List<string> sharedTodoUsers = GetAllUserWhomTodoIsSharedExceptTheCurrentUser(todo, user);
+                    var latestTodoHistory = new TodoHistoryDto
+                    {
+                        CommentedBy = user.Name,
+                        Comment = dto.Comment,
+                        CreatedOn = DateTime.Now,
+                        Status = TodoHistory.StatusCommented,
+                    };
+                    return new SharedTodoUserAndLatestCommentDto
+                    {
+                        LatestTodoHistory = latestTodoHistory,
+                        SharedTodoUsersList = sharedTodoUsers
+                    };
                 }
 
                 catch (Exception)
@@ -271,11 +290,19 @@ namespace ServiceModule.Service
             }
         }
 
+        private static List<string> GetAllUserWhomTodoIsSharedExceptTheCurrentUser(TodoEntity todo, User user)
+        {
+            var sharedTodoUsers = todo.SharedTodos.Select(a => a.User.UserName).ToList();
+            sharedTodoUsers.Add(todo.CreatedByUser.UserName);
+            if (sharedTodoUsers.Contains(user.UserName)) sharedTodoUsers.Remove(user.UserName);
+            return sharedTodoUsers;
+        }
+
         private static void ValidateTodo(TodoEntity todo)
         {
             if (todo.IsCompleted) throw new CustomException("Todo Already Completed");
         }
-        private TodoHistory AddSharedTodoHistory(TodoEntity todo, User user, string comment, string status)
+        private TodoHistory AddTodoHistory(TodoEntity todo, User user, string comment, string status)
         {
             var sharedTodoHistory = new TodoHistory(todo, user, status, comment);
             return sharedTodoHistory;
@@ -305,7 +332,7 @@ namespace ServiceModule.Service
             }
         }
 
-        public async Task<TodoDetailsDto> SetRemainder(string userId, int todoId, DateTime remainderOn)
+        public async Task SetRemainder(string userId, int todoId, DateTime remainderOn)
         {
             using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
             {
@@ -326,8 +353,7 @@ namespace ServiceModule.Service
                     }
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
-                    var response = await GetTodoDetails(todoId, userId).ConfigureAwait(false);
-                    return response;
+                  
 
                 }
                 catch (Exception ex)
@@ -338,7 +364,7 @@ namespace ServiceModule.Service
             }
         }
 
-        public async Task<TodoDetailsDto> UnsetRemainder(string userId, int todoId)
+        public async Task UnsetRemainder(string userId, int todoId)
         {
             using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
             {
@@ -353,9 +379,7 @@ namespace ServiceModule.Service
                         await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     }
                     await tx.CommitAsync().ConfigureAwait(false);
-                    var response = await GetTodoDetails(todoId, userId).ConfigureAwait(false);
-                    return response;
-
+                   
                 }
                 catch (Exception ex)
                 {

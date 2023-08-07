@@ -1,13 +1,18 @@
 ﻿using DomainModule.Dto;
+using DomainModule.Dto.Todo;
+using DomainModule.Entity;
 using DomainModule.ServiceInterface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using ServiceModule.Service;
-using TodoApp.Areas.Todo.ViewModel;
+using TodoApp.Areas.Todo;
 using TodoApp.Extensions;
 using TodoApp.Models;
+using TodoApp.SignalR;
 using TodoApp.ViewModel;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TodoApp.Areas.Todo.ApiController
 {
@@ -16,10 +21,13 @@ namespace TodoApp.Areas.Todo.ApiController
     public class TodoApiController : Controller
     {
         private readonly TodoServiceInterface _todoService;
+        private readonly IHubContext<TodoHub> _hub;
    
-        public TodoApiController(TodoServiceInterface todoService)
+        public TodoApiController(TodoServiceInterface todoService,
+            IHubContext<TodoHub> hub)
         {
             _todoService = todoService;
+            _hub = hub;
         }
 
         [HttpPost("complete")]
@@ -27,12 +35,16 @@ namespace TodoApp.Areas.Todo.ApiController
         {
             try
             {
-
-                var todoHistoryDto = new TodoHistoryCreateDto(this.GetCurrentUserId(), model.TodoId, model.Comment);
-                var todoDetails = await _todoService.MarkAsComplete(todoHistoryDto).ConfigureAwait(true);
-                ToDoDetailsViewModel todoDetailViewModel = BindTodoDetailViewModel(todoDetails);
+                var currentUser = await this.GetCurrentUser();
+                var todoHistoryDto = new TodoHistoryCreateDto(currentUser.Id, model.TodoId, model.Comment);
+                var todoCompleteDetails = await _todoService.MarkAsComplete(todoHistoryDto).ConfigureAwait(true);
+                ToDoDetailsViewModel todoDetailViewModel = BindTodoDetailViewModel(todoCompleteDetails.TodoDetails);
 
                 var todoDetailsView = this.RenderViewAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", todoDetailViewModel,true).GetAwaiter().GetResult();
+
+                var todo = await _todoService.GetById(model.TodoId);
+                var notificationMessage = $"<div>Todo :(<a href='/Todo/Todo/ViewDetail?todoId={todo.Id}'>{todo.Title}</a>) completed By {currentUser.Name}</div>";
+                await BroadCastMessage("CompleteTodo", model.TodoId, todoCompleteDetails.SharedTodoUsersList, notificationMessage, todoDetailsView);
                 return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Todo Completed Successfully", Data = todoDetailsView });
             }
             catch (Exception ex)
@@ -48,12 +60,21 @@ namespace TodoApp.Areas.Todo.ApiController
             try
             {
                 var todoHistoryDto = new TodoHistoryCreateDto(this.GetCurrentUserId(), model.TodoId, model.Comment);
-                var todoDetails =await _todoService.CommentOnTodo(todoHistoryDto).ConfigureAwait(true);
-                ToDoDetailsViewModel todoDetailViewModel = BindTodoDetailViewModel(todoDetails);
+                var SharedTodoUserAndLatestHistory = await _todoService.CommentOnTodo(todoHistoryDto).ConfigureAwait(true);
+                var todoHistory = new TodoHistoryViewModel
+                {
+                    Status = SharedTodoUserAndLatestHistory.LatestTodoHistory.Status,
+                    CreatedOn = SharedTodoUserAndLatestHistory.LatestTodoHistory.CreatedOn,
+                    Comment = SharedTodoUserAndLatestHistory.LatestTodoHistory.Comment,
+                    CommentedBy = SharedTodoUserAndLatestHistory.LatestTodoHistory.CommentedBy,
+                };
+                var todoCommentView = this.RenderViewAsync("~/Areas/Todo/Views/Todo/_todoCommentPartial.cshtml", todoHistory, true).GetAwaiter().GetResult();
 
-                var todoDetailsView =  this.RenderViewAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", todoDetailViewModel, true).GetAwaiter().GetResult();
-               
-                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Commented On Todo Successfully" ,Data = todoDetailsView});
+                var todo = await _todoService.GetById(model.TodoId);
+                var notificationMessage = $"<div>A new comment added on Todo :(<a href='/Todo/Todo/ViewDetail?todoId={todo.Id}'>{todo.Title}</a>)  By {SharedTodoUserAndLatestHistory.LatestTodoHistory.CommentedBy}</div>";
+                await BroadCastMessage("RefreshTodoComment",model.TodoId, SharedTodoUserAndLatestHistory.SharedTodoUsersList,notificationMessage, todoCommentView);
+
+                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Commented On Todo Successfully", Data = todoCommentView });
             }
             catch (Exception ex)
             {
@@ -61,6 +82,20 @@ namespace TodoApp.Areas.Todo.ApiController
             }
         }
 
+        private async Task BroadCastMessage(string method, int todoId, List<string> sharedTodoUsersList,string notificationMessage, string message)
+        {
+            if (sharedTodoUsersList.Any())
+            {
+                 foreach (var sharedToUser in sharedTodoUsersList)
+                {
+                    var connectionIdOfSharedUser = TodoHub._connections.GetConnections(sharedToUser).FirstOrDefault();
+                    if (!string.IsNullOrEmpty(connectionIdOfSharedUser))
+                    {
+                        await _hub.Clients.Client(connectionIdOfSharedUser).SendAsync(method, message, notificationMessage, todoId);
+                    }
+                }
+            }
+        }
 
         [HttpDelete("{todoId:int}")]
         public async Task<IActionResult> Delete(int todoId)
@@ -81,12 +116,9 @@ namespace TodoApp.Areas.Todo.ApiController
         {
             try
             {
-                  var todoDetails = await _todoService.SetRemainder(this.GetCurrentUserId(),model.TodoId,model.RemainderOn).ConfigureAwait(true);
-                ToDoDetailsViewModel todoDetailViewModel = BindTodoDetailViewModel(todoDetails);
-
-                var todoDetailsView = this.RenderViewAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", todoDetailViewModel, true).GetAwaiter().GetResult();
-
-                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Remainder Set Successfully", Data = todoDetailsView });
+                   await _todoService.SetRemainder(this.GetCurrentUserId(),model.TodoId,model.RemainderOn).ConfigureAwait(true);
+               
+                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Remainder Set Successfully"});
             }
             catch (Exception ex)
             {
@@ -99,12 +131,9 @@ namespace TodoApp.Areas.Todo.ApiController
         {
             try
             {
-                var todoDetails = await _todoService.UnsetRemainder(this.GetCurrentUserId(),todoId).ConfigureAwait(true);
-                ToDoDetailsViewModel todoDetailViewModel = BindTodoDetailViewModel(todoDetails);
-
-                var todoDetailsView = this.RenderViewAsync("~/Areas/Todo/Views/Todo/_todoDetailsPartial.cshtml", todoDetailViewModel, true).GetAwaiter().GetResult();
-
-                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Remainder Unset Successfully", Data = todoDetailsView });
+                await _todoService.UnsetRemainder(this.GetCurrentUserId(),todoId).ConfigureAwait(true);
+               
+                return new JsonResult(new ResponseModel { IsSuccess = true, Status = StatusType.success.ToString(), Message = "Remainder Unset Successfully" });
             }
             catch (Exception ex)
             {
@@ -135,7 +164,7 @@ namespace TodoApp.Areas.Todo.ApiController
             }
         }
 
-
+     
         private static ToDoDetailsViewModel BindTodoDetailViewModel(TodoDetailsDto todoDetails)
         {
             var todoDetailViewModel = new ToDoDetailsViewModel

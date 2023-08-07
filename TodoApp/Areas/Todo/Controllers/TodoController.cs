@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using NToastNotify;
 using System.Data;
-using TodoApp.Areas.Todo.ViewModel;
+using TodoApp.Areas.Todo;
 using TodoApp.Extensions;
 using TodoApp.SignalR;
 using TodoApp.ViewModel;

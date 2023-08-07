@@ -1,4 +1,4 @@
-﻿using TodoApp.Areas.Todo.ViewModel;
+﻿using TodoApp.ViewModel;
 
 namespace TodoApp.ViewModel
 {

@@ -1,4 +1,4 @@
-﻿namespace TodoApp.Areas.Todo.ViewModel
+﻿namespace TodoApp.ViewModel
 {
     public class TodoHistoryViewModel
     {
