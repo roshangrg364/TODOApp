@@ -63,9 +63,17 @@
    - On View Page of todo delete button is eligible to the creator of todo.
    - On delete all the data related to the todo will be deleted.
 
+
+ #### How to Comment on todo?
+  - User whom the todo is shared and the creator are accessible to comment on todo.
+  - User can place a comment and click on comment  todo  button to comment on the todo
+  - After comment all the  user linked with the todo will get live notification and comment will be updated automatically to their todo page.
+
   #### How to complete todo?
   - User whom the todo is shared and the creator are accessible to close todo.
   - User can place a comment and click on close todo to complete the todo
+  - - After closing todo all the user linked with the todo will get live notification and comment will be updated automatically to their todo page.
+
 
   #### How to Set Reminder ?
   - Creator of todo and user whom the the todo is can set reminder for todo .
