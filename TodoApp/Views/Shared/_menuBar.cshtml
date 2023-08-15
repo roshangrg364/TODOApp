@@ -96,3 +96,75 @@
 
 </ul>
 <!-- End of Sidebar -->
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+        <li class="nav-item">
+            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+            </a>
+        </li><!-- End Dashboard Nav -->
+        @if ((await AuthorizationService.AuthorizeAsync(User, "Role-View")).Succeeded || (await AuthorizationService.AuthorizeAsync(User, "User-View")).Succeeded)
+        {
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-menu-button-wide"></i><span>Account Management</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "Role-View")).Succeeded)
+                    {
+                        <li>
+                            <a asp-area="Account" asp-controller="Role" asp-action="Index">
+                                <i class="bi bi-circle"></i><span>Role</span>
+                            </a>
+                        </li>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "User-View")).Succeeded)
+                    {
+                        <li>
+                            <a asp-area="Account" asp-controller="User" asp-action="Index">
+                                <i class="bi bi-circle"></i><span>User</span>
+                            </a>
+                        </li>
+                    }
+                  
+                </ul>
+            </li>
+
+            <!-- End Components Nav -->
+        }
+        <li class="nav-item">
+            <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-journal-text"></i><span>Todo Management</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a asp-area="Todo" asp-controller="Todo" asp-action="Index">
+                        <i class="bi bi-circle"></i><span>Todo List</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo">
+                        <i class="bi bi-circle"></i><span>Active Todo</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-area="Todo" asp-controller="Todo" asp-action="CompletedTodo">
+                        <i class="bi bi-circle"></i><span>Completed Todo</span>
+                    </a>
+                </li>
+                <li>
+                    <a hasp-area="Todo" asp-controller="SharedTodo" asp-action="Index">
+                        <i class="bi bi-circle"></i><span>Shared Todo</span>
+                    </a>
+                </li>
+            </ul>
+        </li><!-- End Forms Nav -->
+
+        
+    </ul>
+
+</aside><!-- End Sidebar-->

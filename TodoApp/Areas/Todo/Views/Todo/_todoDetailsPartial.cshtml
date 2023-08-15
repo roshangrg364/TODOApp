@@ -19,14 +19,14 @@
 
                 <a class="unset-remainder @SetReminderClass" data-todoId="@Model.Id"><i class="fa fa-clock fa-lg" style="color:lightcoral"></i> unset reminder</a>
 
-                <a class="@UnSetReminderClass set-reminder" data-toggle="modal" data-target="#RemainderModel"><i class="fa fa-clock fa-lg"></i> set reminder</a>
+                <a class="@UnSetReminderClass set-reminder" data-bs-toggle="modal" data-bs-target="#RemainderModel"><i class="fa fa-clock fa-lg"></i> set reminder</a>
                 <div class="modal fade" id="RemainderModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                      aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalLabel">Set Reminder</h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <button class="btn-close" type="button" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </div>

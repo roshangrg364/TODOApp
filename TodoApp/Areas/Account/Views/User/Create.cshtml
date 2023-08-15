@@ -2,7 +2,15 @@
 @{
     ViewData["Title"] = "Create User";
 }
+<div class="pagetitle">
+    <h1>User</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">User / Create  </li>
 
+        </ol>
+    </nav>
+</div>
 <div class="container">
 
     <div class="card o-hidden border-0 shadow-lg my-5">
@@ -12,9 +20,7 @@
                 <div class="col-md-2"></div>
                 <div class="col-lg-8">
                     <div class="p-5">
-                        <div class="text-center">
-                            <h1 class="h4 text-gray-900 mb-4">Create User!</h1>
-                        </div>
+                       
                        
                         <form method="post" asp-action="Create">
                             <div class="form-group ">
@@ -23,40 +29,40 @@
                                 @Html.ValidationMessageFor(a=>a.Name,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Username *</label>
                                 @Html.TextBoxFor(a=>a.UserName,new{@class="form-control form-control-user required",placeholder="Username"})
                                 @Html.ValidationMessageFor(a=>a.UserName,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Email Address *</label>
                                 @Html.TextBoxFor(a=>a.EmailAddress,new{@class="form-control form-control-user required",placeholder="Email"})
                                 @Html.ValidationMessageFor(a=>a.EmailAddress,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Mobile Number *</label>
                                 @Html.TextBoxFor(a=>a.MobileNumber,new{@class="form-control form-control-user required",placeholder="Mobile Number"})
                                 @Html.ValidationMessageFor(a=>a.MobileNumber,"",new{@class="text-danger"})
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Password *</label>
                                 @Html.TextBoxFor(a=>a.Password,new{@class="form-control form-control-user required",placeholder="Password",type="password"})
                                 @Html.ValidationMessageFor(a=>a.Password,"",new{@class="text-danger"})
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Confirm Password *</label>
                                 @Html.TextBoxFor(a=>a.ConfirmPassword,new{@class="form-control form-control-user required",placeholder="Confirm Password",type="password"})
                                 @Html.ValidationMessageFor(a=>a.ConfirmPassword,"",new{@class="text-danger"})
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Roles *</label>
                                 @Html.ListBoxFor(a=>a.Roles,(SelectList)ViewBag.RoleList,new{@class="form-control Roles",data_val=false})
 
                             </div>
 
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary mt-2">
                                 create
                             </button>
 

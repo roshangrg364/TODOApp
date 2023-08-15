@@ -3,204 +3,211 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="container-fluid">
+<div class="pagetitle">
+    <h1>Home</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Home/Dashboard</li>
 
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-
-    </div>
-
-    <!-- Content Row -->
+        </ol>
+    </nav>
+</div>
+<section class="section dashboard">
     <div class="row">
-        @if (Model.IsSuperAdmin)
-        {
-            <!--Total user -->
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                 <a asp-area="Account" asp-controller="User" asp-action="Index">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total User
-                                </div>
-                                </a>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-users">0</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        <!-- Total Todos -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <a asp-area="Todo" asp-controller="Todo" asp-action="Index">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Total Todos
+        <div class="col-lg-12">
+            <div class="row">
+
+                <!-- Totalusers -->
+                @if (Model.IsSuperAdmin)
+                {
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card sales-card">
+                            <a asp-area="Account" asp-controller="User" asp-action="Index">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total <span>| Users</span></h5>
+
+                                    <div class="d-flex align-items-center">
+                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-people"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <h6 id="total-users">0</h6>
+
+                                        </div>
+                                    </div>
                                 </div>
                             </a>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-todos">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Active Todos -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo">
+                    <!-- End Sales Card -->
+                }
+                <!-- Total Todos -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card revenue-card">
+                        <a asp-area="Todo" asp-controller="Todo" asp-action="Index">
+                            <div class="card-body">
+                                <h5 class="card-title">Total <span>| Todos</span></h5>
 
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Active todos
-                                </div>
-                            </a>
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" id="active-todos">0</div>
-                                </div>
-                                <div class="col">
-                                    <div class="progress progress-sm mr-2">
-                                        <div class="progress-bar bg-info" role="progressbar"
-                                             style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                             aria-valuemax="100"></div>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-file"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6 id="total-todos">0</h6>
+
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                        </div>
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
+                <!-- Active Todos -->
+                <div class="col-xxl-4 col-xl-6">
+                    <div class="card info-card customers-card">
+                        <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo">
+                            <div class="card-body">
+                                <h5 class="card-title">Active <span>| Todos</span></h5>
 
-        <!--Completed Todos -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <a asp-area="Todo" asp-controller="Todo" asp-action="CompletedTodo">
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-chat"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6 id="active-todos">0</h6>
 
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Completed Todos
+                                    </div>
                                 </div>
-                            </a>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="completed-todos">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
+
+                            </div>
+                        </a>
                     </div>
+
+
                 </div>
-            </div>
-        </div>
 
-        <!--Shared Todos -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <a asp-area="Todo" asp-controller="SharedTodo" asp-action="Index">
+                <!-- Completed Todos -->
 
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Shared Todos
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card sales-card">
+                        <a asp-area="Todo" asp-controller="Todo" asp-action="CompletedTodo">
+                            <div class="card-body">
+                                <h5 class="card-title">Completed <span>| Todos</span></h5>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-check"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6 id="completed-todos">0</h6>
+
+                                    </div>
                                 </div>
-                            </a>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="shared-todos">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!--High Priority Todos -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-danger shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo" asp-route-PriorityLevel="3">
+                <!-- Shared Todos -->
 
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    High Priority Todos
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card revenue-card">
+                        <a asp-area="Todo" asp-controller="SharedTodo" asp-action="Index">
+                            <div class="card-body">
+                                <h5 class="card-title">Shared <span>| Todos</span></h5>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-reply-all-fill"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6 id="shared-todos">0</h6>
+
+                                    </div>
                                 </div>
-                            </a>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="high-priority-todos">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!--Medium Priority Todos -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo" asp-route-PriorityLevel="2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Medium Priority Todos
+
+                <!-- High Priority Todos -->
+
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card customer-card">
+                        <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo" asp-route-PriorityLevel="3">
+                            <div class="card-body">
+                                <h5 class="card-title">High Priority <span>| Todos</span></h5>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-box-arrow-in-up"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6 id="high-priority-todos">0</h6>
+
+                                    </div>
                                 </div>
-                            </a>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="medium-priority-todos">0</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!--low priority Todos -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo" asp-route-PriorityLevel="1">
 
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Low Priority Todos
+                <!-- Medium Priority Todos -->
+
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card sales-card">
+                          <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo" asp-route-PriorityLevel="2">
+                        <div class="card-body">
+                            <h5 class="card-title">Medium Priority <span>| Todos</span></h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-box"></i>
                                 </div>
-                            </a>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="low-priority-todos">0</div>
+                                <div class="ps-3">
+                                    <h6 id="medium-priority-todos">0</h6>
+
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
+                        </a>
                     </div>
                 </div>
+
+
+                <!-- Low Priority Todos -->
+
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card revenue-card">
+                          <a asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo" asp-route-PriorityLevel="1">
+                        <div class="card-body">
+                            <h5 class="card-title">Low Priority <span>| Todos</span></h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-box-arrow-in-down"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 id="low-priority-todos">0</h6>
+
+                                </div>
+                            </div>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+
             </div>
+
         </div>
     </div>
+</section>
 
-    <!-- Content Row -->
+
+<div class="container-fluid">
+ <!-- Content Row -->
 
     <div class="row">
 

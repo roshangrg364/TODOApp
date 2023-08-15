@@ -4,6 +4,15 @@
 }
 @using DomainModule.Enums
 @using DomainModule.Entity
+<div class="pagetitle">
+    <h1>Shared Todo</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Shared Todo/Index   </li>
+
+        </ol>
+    </nav>
+</div>
 <section class="vh-100 gradient-custom-2">
     <div class="container  ">
         <div class="row ">
@@ -11,11 +20,6 @@
 
                 <div class="card mask-custom">
                     <div class="card-body p-4">
-
-                        <div class="text-center">
-
-                            <h4 class="my-4">Shared Todo List</h4>
-                        </div>
 
                         <form asp-area="Todo" asp-controller="SharedTodo" asp-action="Index">
                             <div class="d-flex justify-content-start col-md-12">
@@ -51,7 +55,7 @@
                                 </div>
                             </div>
                         </form>
-
+                        <div class="mt-4">
                         <table id="todoTable" class="table  mb-0">
                             <thead>
                                 <tr>
@@ -104,12 +108,12 @@
                                             <td>
                                                 @if(item.Status == TodoEntity.StatusActive)
                                                 {
-                                                    <span class="badge badge-success">Active</span>
+                                                    <span>Active</span>
                                                 }
                                                 else
 
                                                 {
-                                                    <span class="badge badge-info">Completed</span>
+                                                    <span>Completed</span>
                                                 }
                                                </td>
                                             <td class="align-middle">
@@ -131,7 +135,7 @@
                                 }
                             </tbody>
                         </table>
-
+                        </div>
 
                     </div>
                 </div>

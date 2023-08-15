@@ -7,6 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.bundle.js" />
+    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.bundle.js.map" />
+    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.bundle.min.js" />
+    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.bundle.min.js.map" />
+    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.js" />
+    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.js.map" />
+    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.min.js" />
+    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.min.js.map" />
+    <None Include="wwwroot\vendor\chart.js\Chart.bundle.js" />
+    <None Include="wwwroot\vendor\chart.js\Chart.bundle.min.js" />
+    <None Include="wwwroot\vendor\chart.js\Chart.js" />
+    <None Include="wwwroot\vendor\chart.js\Chart.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Cronos" Version="0.7.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />

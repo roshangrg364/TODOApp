@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Todo App";
+  
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -15,38 +16,20 @@
     @await RenderSectionAsync("Styles", false)
 </head>
 
-<body id="page-top">
+<body>
+    <div class="loading hidden">Loading&#8230;</div>
+    @await Html.PartialAsync("_header")
+    @await Html.PartialAsync("_menuBar")
 
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-        <div class="loading hidden">Loading&#8230;</div>
-       @await Html.PartialAsync("_menuBar")
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
+    <main id="main" class="main">
 
-            <!-- Main Content -->
-            <div id="content">
-                @await Html.PartialAsync("_header")
-               
-                <!-- Begin Page Content -->
-               @RenderBody()
-                <!-- /.container-fluid -->
+    @RenderBody()
+    </main>
+      @await Html.PartialAsync("_footer")
 
-            </div>
-            <!-- End of Main Content -->
-            @await Html.PartialAsync("_footer")
+      @await Component.InvokeAsync("NToastNotify")
 
-            @await Component.InvokeAsync("NToastNotify")
-
-        </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -55,13 +38,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                      
                     </button>
                 </div>
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
                     <a class="btn btn-primary" asp-area="Account" asp-controller="Account" asp-action="Logout">Logout</a>
                 </div>
             </div>
@@ -75,14 +58,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Notification alert !!</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                       
                     </button>
                 </div>
                 <div class="modal-body signalRMessage"></div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-                        </div>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>

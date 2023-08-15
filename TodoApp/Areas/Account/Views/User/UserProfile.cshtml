@@ -2,7 +2,15 @@
 @{
     ViewData["Title"] = "User Profile";
 }
+<div class="pagetitle">
+    <h1>User</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">User/ UserProfile   </li>
 
+        </ol>
+    </nav>
+</div>
 <div class="container">
 
     <div class="card o-hidden border-0 shadow-lg my-5">
@@ -12,31 +20,27 @@
                 <div class="col-md-2"></div>
                 <div class="col-lg-8">
                     <div class="p-5">
-                        <div class="text-center">
-                            <h1 class="h4 text-gray-900 mb-4">@ViewData["Title"]</h1>
-                        </div>
-
                         <form method="post" asp-action="UpdateProfile">
                             @Html.HiddenFor(a=>a.Id)
-                            <div class="form-group ">
+                            <div class="form-group mt-2">
                                 <label>Full Name *</label>
                                 @Html.TextBoxFor(a=>a.Name,new{@class="form-control form-control-user required",placeholder="Full Name"})
                                 @Html.ValidationMessageFor(a=>a.Name,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Username *</label>
                                 @Html.TextBoxFor(a=>a.UserName,new{@class="form-control form-control-user required",placeholder="Username"})
                                 @Html.ValidationMessageFor(a=>a.UserName,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Email Address *</label>
                                 @Html.TextBoxFor(a=>a.EmailAddress,new{@class="form-control form-control-user required",placeholder="Email"})
                                 @Html.ValidationMessageFor(a=>a.EmailAddress,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Mobile Number *</label>
                                 @Html.TextBoxFor(a=>a.MobileNumber,new{@class="form-control form-control-user required",placeholder="Mobile Number"})
                                 @Html.ValidationMessageFor(a=>a.MobileNumber,"",new{@class="text-danger"})
@@ -44,7 +48,7 @@
 
                        
 
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary mt-2">
                                 Update Profile
                             </button>
 

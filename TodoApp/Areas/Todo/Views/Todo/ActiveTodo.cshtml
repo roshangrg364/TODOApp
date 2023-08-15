@@ -3,6 +3,17 @@
     ViewData["Title"] = "Active Todo";
 }
 @using DomainModule.Enums
+
+<div class="pagetitle">
+    <h1>Todo</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Todo/Active Todo    </li>
+
+        </ol>
+    </nav>
+</div>
+
 <section class="vh-100 gradient-custom-2">
     <div class="container  ">
         <div class="row ">
@@ -10,12 +21,6 @@
 
                 <div class="card mask-custom">
                     <div class="card-body p-4">
-
-                        <div class="text-center">
-
-                            <h4 class="my-4"> @ViewData["Title"]</h4>
-                        </div>
-                      
                         <form asp-area="Todo" asp-controller="Todo" asp-action="ActiveTodo">
                             <div class="d-flex justify-content-start col-md-12">
 

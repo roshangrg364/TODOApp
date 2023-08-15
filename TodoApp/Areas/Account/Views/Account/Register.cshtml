@@ -21,8 +21,10 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
           rel="stylesheet">
 
-    <!-- Custom styles for this template-->
-    <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/css/style.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/vendor/boxicons/css/boxicons.min.css" rel="stylesheet" asp-append-version="true">
+
 
 </head>
 
@@ -49,34 +51,34 @@
                                 @Html.ValidationMessageFor(a=>a.Name,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Username *</label>
                                 @Html.TextBoxFor(a=>a.UserName,new{@class="form-control form-control-user required",placeholder="Username"})
                                 @Html.ValidationMessageFor(a=>a.UserName,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Email Address *</label>
                                 @Html.TextBoxFor(a=>a.EmailAddress,new{@class="form-control form-control-user required",placeholder="Email"})
                                 @Html.ValidationMessageFor(a=>a.EmailAddress,"",new{@class="text-danger"})
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group mt-2">
                                 <label>Mobile Number *</label>
                                 @Html.TextBoxFor(a=>a.MobileNumber,new{@class="form-control form-control-user required",placeholder="Mobile Number"})
                                 @Html.ValidationMessageFor(a=>a.MobileNumber,"",new{@class="text-danger"})
                             </div>
-                            <div class="form-group">
+                                <div class="form-group mt-2">
                                 <label>Password *</label>
                                 @Html.TextBoxFor(a=>a.Password,new{@class="form-control form-control-user required",placeholder="Password",type="password"})
                                 @Html.ValidationMessageFor(a=>a.Password,"",new{@class="text-danger"})
                             </div>
-                            <div class="form-group">
+                                <div class="form-group mt-2">
                                 <label>Confirm Password *</label>
                                 @Html.TextBoxFor(a=>a.ConfirmPassword,new{@class="form-control form-control-user required",placeholder="Confirm Password",type="password"})
                                 @Html.ValidationMessageFor(a=>a.ConfirmPassword,"",new{@class="text-danger"})
                             </div>
-                           
+                           <br />
                             <button type="submit" class="btn btn-primary">
                                 create
                             </button>
@@ -92,17 +94,12 @@
 
 </div>
 
-<!-- Bootstrap core JavaScript-->
-<script src="~/vendor/jquery/jquery.min.js"></script>
-<script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js" asp-append-version="true"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js" asp-append-version="true"></script>
+    <!-- Bootstrap core JavaScript-->
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js" asp-append-version="true"></script>
 
-<!-- Core plugin JavaScript-->
-<script src="~/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-<!-- Custom scripts for all pages-->
-<script src="~/js/sb-admin-2.min.js"></script>
 @await Component.InvokeAsync("NToastNotify")
 
 </body>
