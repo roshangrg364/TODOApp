@@ -44,7 +44,7 @@ namespace ServiceModule.Service
         {
             try
             {
-                var todo = await _todoRepo.GetQueryable().Include(a => a.SharedTodoHistory).Include(a => a.SharedTodos).Include(a => a.TodoRemainder).Include(a => a.CreatedByUser).Include(a => a.CompletedByUser).Where(a => a.Id == todoId).FirstOrDefaultAsync().ConfigureAwait(false) ?? throw new CustomException("Todo not found");
+                var todo = await _todoRepo.GetQueryable().Include(a => a.CreatedByUser).Include(a => a.CompletedByUser).Include(a => a.SharedTodoHistory).ThenInclude(a => a.CommentedByUser).Include(a => a.SharedTodos).Include(a => a.TodoRemainder).Where(a => a.Id == todoId).FirstOrDefaultAsync().ConfigureAwait(false) ?? throw new CustomException("Todo not found");
                 var todoDetailsDto = new TodoDetailsDto()
                 {
                     Id = todo.Id,
@@ -171,7 +171,7 @@ namespace ServiceModule.Service
 
         private async Task<IQueryable<TodoEntity>> FilterTodos(TodoFilterDto filter)
         {
-            var allTodosOfUserQueryable = _todoRepo.GetQueryable();
+            IQueryable<TodoEntity> allTodosOfUserQueryable = _todoRepo.GetQueryable().Include(a=>a.CompletedByUser).Include(a=>a.CreatedByUser);
             if (!string.IsNullOrEmpty(filter.Title))
             {
                 allTodosOfUserQueryable = allTodosOfUserQueryable.Where(a => a.Title.ToLower().Contains(filter.Title));
