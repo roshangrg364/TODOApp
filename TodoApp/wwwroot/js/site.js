@@ -1,3 +1,50 @@
+$(document).ready(function () {
+    loadNotificationCount();
+})
+
+$("#notificationDiv").on("click", function () {
+    $.ajax({
+        url: '/api/notifications/notification-view',
+        type: "get",
+        success: function (data) {
+            if (data.IsSuccess == true) {
+                $("#NotificationMessages").html(data.Data)
+            }          
+        },
+        error: function (response) {
+            console.log(response)
+        }
+    })
+})
+
+$(document).on("click", ".ReadNotification", function () {
+    const elm = $(this);
+    const id = elm.attr("data-id");
+    $.ajax({
+        url: '/api/notifications/MarkNotificationAsRead/'+id,
+        type: "put",
+        success: function (data) {
+            if (data.IsSuccess == true) {
+                if (data.Data.TodoCount) {
+                    $("#total-notification").text(data.Data.TodoCount);
+                }
+                
+                if (data.Data.TodoId) {
+                   window.open("/Todo/Todo/ViewDetail?todoId=" + data.Data.TodoId,"_self")
+                }
+                else {
+                    elm.removeClass("bg-dark")
+                    elm.removeClass("ReadNotification")
+                }
+             
+            }
+        },
+        error: function (response) {
+            console.log(response)
+        }
+    })
+})
+
 function loadDashboardData() {
 
     $.ajax({
@@ -161,7 +208,19 @@ function loadDashboardData() {
    
 }
 
+function loadNotificationCount() {
+    $.ajax({
+        url: '/api/notifications/notification-count',
+        type: "get",
+        success: function (data) {
+            $("#total-notification").text(data.Data)
+        },
+        error: function (response) {
+            console.log(response)
+        }
+    })
 
+}
 function blockwindow() {
     document.querySelector(".loading").classList.remove("hidden")
 }

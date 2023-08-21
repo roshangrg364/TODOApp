@@ -1,0 +1,56 @@
+﻿@model List<DomainModule.Dto.NotificationDto>
+@{
+}
+
+<div class="pagetitle">
+    <h1>Notification</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Notification/Index   </li>
+
+        </ol>
+    </nav>
+</div>
+
+<div class="mt-4">
+    <table id="notificationTable" class="table mb-0">
+        <thead>
+            <tr>
+                <th>
+                    Notifications
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var notification in Model)
+        {
+            <tr>
+                @{
+                    var style = !notification.MarkedAsRead ? "bg-dark text-white" : "";
+                }
+                    <td class="@style ReadNotification" data-id="@notification.Id">
+                    <span class="notification-item" style="cursor:pointer">
+                        <i class="bi bi-exclamation-circle text-warning"></i>
+                        <div>
+                            <p>@Html.Raw(notification.Comment)</p>
+                        </div>
+                    </span>
+                </td>
+
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts
+    {
+    <script>
+        $(document).ready(function () {
+            $('#notificationTable').DataTable({
+                searching: false,
+                ordering: false
+            })
+        })
+    </script>
+}

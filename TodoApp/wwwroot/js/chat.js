@@ -13,6 +13,7 @@ connection.on("NotifyUserAndRefreshDashboard", function (message) {
 
 connection.on("ShowRemainder", function () {
 loadRemainderNotification();
+
 });
 
 connection.on("RefreshTodoComment", function (message,notificationMessage,commentedTodoId) {
@@ -23,9 +24,10 @@ connection.on("RefreshTodoComment", function (message,notificationMessage,commen
             divToAppend.innerHTML += message;
         }
     }
-   
+    loadNotificationCount();
     document.querySelector(".signalRMessage").innerHTML = notificationMessage;
     $('#SignalRNotification').modal('show');
+    
 });
 
 connection.on("CompleteTodo", function (message, notificationMessage, commentedTodoId) {
@@ -38,9 +40,10 @@ connection.on("CompleteTodo", function (message, notificationMessage, commentedT
             document.querySelector(".reminderDiv").classList.add("hidden")
         }
     }
-   
+    loadNotificationCount();
     document.querySelector(".signalRMessage").innerHTML = notificationMessage;
     $('#SignalRNotification').modal('show');
+   
 });
 
 connection.start().then(function () {

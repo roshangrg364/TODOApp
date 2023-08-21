@@ -17,6 +17,7 @@ namespace ServiceModule.Service
     {
         private readonly SharedTodoRepositoryInterface _sharedTodoRepo;
         private readonly TodoHistoryRepositoryInterface _todoHistoryRepo;
+        private readonly NotificationRepositoryInterface _notificationRepo;
         private readonly TodoRepositoryInterface _todoRepo;
         private readonly UserRepositoryInterface _userRepo;
         private readonly IUnitOfWork _unitOfWork;
@@ -24,13 +25,15 @@ namespace ServiceModule.Service
             TodoRepositoryInterface todoRepo,
             IUnitOfWork unitOfWork,
             UserRepositoryInterface userRepo,
-            TodoHistoryRepositoryInterface todoHistoryRepo)
+            TodoHistoryRepositoryInterface todoHistoryRepo,
+            NotificationRepositoryInterface notificationRepo)
         {
             _sharedTodoRepo = sharedTodoRepo;
             _todoRepo = todoRepo;
             _unitOfWork = unitOfWork;
             _userRepo = userRepo;
             _todoHistoryRepo = todoHistoryRepo;
+            _notificationRepo = notificationRepo;
         }
         public async Task Create(SharedTodoCreateDto dto)
         {
@@ -43,6 +46,8 @@ namespace ServiceModule.Service
                     var sharedTodoEntity = new SharedTodoEntity(todo, user);
                     var comment = $"Todo Shared By {todo.CreatedByUser.Name} to {user.Name} <br/> Comment: {dto.Description}";
                     var sharedTodoHistory = AddSharedTodoHistory(todo, todo.CreatedByUser, comment, TodoHistory.StatusShared);
+                    var notification = new Notification(user, $"Todo ({todo.Title}) Shared By {todo.CreatedByUser.Name} to {user.Name}", todo);
+                    await _notificationRepo.InsertAsync(notification).ConfigureAwait(false);
                     await _sharedTodoRepo.InsertAsync(sharedTodoEntity).ConfigureAwait(false);
                     await _todoHistoryRepo.InsertAsync(sharedTodoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);

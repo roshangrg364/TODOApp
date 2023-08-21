@@ -1,0 +1,47 @@
+﻿@model DomainModule.Dto.NotificationsWithCountDto
+@{
+    Layout = null;
+}
+@if (Model.Notifications.Any())
+{
+    <li class="dropdown-header">
+        @if (Model.TotalCount > 0)
+        {
+            <span>You have @Model.TotalCount new notifications</span>
+        }
+        else
+        {
+            <span>No new notifications</span>
+        }
+    </li>
+
+    <li>
+        <hr class="dropdown-divider">
+    </li>
+    @foreach (var notification in Model.Notifications)
+    {
+        var style = !notification.MarkedAsRead ? "bg-dark" : "";
+        <li class="notification-item @style ReadNotification" data-id="@notification.Id" style="cursor:pointer">
+            <i class="bi bi-exclamation-circle text-warning"></i>
+            <div>
+                <p>@Html.Raw(notification.Comment)</p>
+            </div>
+        </li>
+
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+    }
+
+    <li class="dropdown-footer">
+        <a asp-area="Todo" asp-controller="Notification" asp-action="Index">Show all notifications</a>
+    </li>
+
+}
+else
+{
+    <li class="dropdown-header">
+        <span>No notifications</span>
+    </li>
+
+}

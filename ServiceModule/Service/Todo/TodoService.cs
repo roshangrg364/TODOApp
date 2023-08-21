@@ -25,12 +25,14 @@ namespace ServiceModule.Service
         private readonly TodoHistoryRepositoryInterface _todoHistoryRepo;
         private readonly SharedTodoRepositoryInterface _sharedTodoRepo;
         private readonly TodoRemainderRepositoryInterface _todoRemainderRepo;
+        private readonly NotificationRepositoryInterface _notificationRepo;
         public TodoService(TodoRepositoryInterface todoRepo,
             UserRepositoryInterface userRepo,
             IUnitOfWork unitOfWork,
             TodoHistoryRepositoryInterface todoHistoryRepo,
             SharedTodoRepositoryInterface sharedTodoRepo,
-            TodoRemainderRepositoryInterface todoRemainderRepo)
+            TodoRemainderRepositoryInterface todoRemainderRepo,
+            NotificationRepositoryInterface notificationRepo)
         {
             _todoRepo = todoRepo;
             _userRepo = userRepo;
@@ -38,6 +40,7 @@ namespace ServiceModule.Service
             _todoHistoryRepo = todoHistoryRepo;
             _sharedTodoRepo = sharedTodoRepo;
             _todoRemainderRepo = todoRemainderRepo;
+            _notificationRepo = notificationRepo;
         }
 
         public async Task<TodoDetailsDto> GetTodoDetails(int todoId, string userId)
@@ -171,7 +174,7 @@ namespace ServiceModule.Service
 
         private async Task<IQueryable<TodoEntity>> FilterTodos(TodoFilterDto filter)
         {
-            IQueryable<TodoEntity> allTodosOfUserQueryable = _todoRepo.GetQueryable().Include(a=>a.CompletedByUser).Include(a=>a.CreatedByUser);
+            IQueryable<TodoEntity> allTodosOfUserQueryable = _todoRepo.GetQueryable().Include(a => a.CompletedByUser).Include(a => a.CreatedByUser);
             if (!string.IsNullOrEmpty(filter.Title))
             {
                 allTodosOfUserQueryable = allTodosOfUserQueryable.Where(a => a.Title.ToLower().Contains(filter.Title));
@@ -232,14 +235,23 @@ namespace ServiceModule.Service
                     var todoHistory = AddTodoHistory(todo, user, dto.Comment, TodoHistory.StatusClosed);
                     _todoRepo.Update(todo);
                     await _todoHistoryRepo.InsertAsync(todoHistory).ConfigureAwait(false);
+                    var usersToSendNotifications = todo.SharedTodos.Select(a => a.User).ToList();
+                    usersToSendNotifications.Add(todo.CreatedByUser);
+                   if (usersToSendNotifications.Contains(user)) usersToSendNotifications.Remove(user);
+
+                    foreach (var sharedUser in usersToSendNotifications)
+                    {
+                        var notification = new Notification(sharedUser, $"Todo ({todo.Title}) has been completed", todo);
+                        await _notificationRepo.InsertAsync(notification).ConfigureAwait(false);
+                    }
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
                     var todoDetails = await GetTodoDetails(dto.TodoId, dto.UserId).ConfigureAwait(false);
-                    List<string> sharedTodoUsers = GetAllUserWhomTodoIsSharedExceptTheCurrentUser(todo, user);
-
-                    return new TodoCompleteDto { 
-                    SharedTodoUsersList = sharedTodoUsers,
-                    TodoDetails = todoDetails
+                    List<string> sharedTodoUsers = usersToSendNotifications.Select(a=>a.UserName).ToList();
+                    return new TodoCompleteDto
+                    {
+                        SharedTodoUsersList = sharedTodoUsers,
+                        TodoDetails = todoDetails
                     };
 
                 }
@@ -264,10 +276,19 @@ namespace ServiceModule.Service
                     var user = await _userRepo.GetByIdString(dto.UserId).ConfigureAwait(false) ?? throw new UserNotFoundException();
                     if (string.IsNullOrEmpty(dto.Comment)) throw new CustomException("Comment is required");
                     var sharedTodoHistory = AddTodoHistory(todo, user, dto.Comment, TodoHistory.StatusCommented);
+                    var usersToSendNotifications = todo.SharedTodos.Select(a => a.User).ToList();
+                    usersToSendNotifications.Add(todo.CreatedByUser);
+                    if (usersToSendNotifications.Contains(user)) usersToSendNotifications.Remove(user);
+
+                    foreach (var sharedUser in usersToSendNotifications)
+                    {
+                        var notification = new Notification(sharedUser, $"A new comment Added on Todo ({todo.Title})", todo);
+                        await _notificationRepo.InsertAsync(notification).ConfigureAwait(false);
+                    }
                     await _todoHistoryRepo.InsertAsync(sharedTodoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
-                    List<string> sharedTodoUsers = GetAllUserWhomTodoIsSharedExceptTheCurrentUser(todo, user);
+                    List<string> sharedTodoUsers = usersToSendNotifications.Select(a=>a.UserName).ToList();
                     var latestTodoHistory = new TodoHistoryDto
                     {
                         CommentedBy = user.Name,
@@ -290,13 +311,6 @@ namespace ServiceModule.Service
             }
         }
 
-        private static List<string> GetAllUserWhomTodoIsSharedExceptTheCurrentUser(TodoEntity todo, User user)
-        {
-            var sharedTodoUsers = todo.SharedTodos.Select(a => a.User.UserName).ToList();
-            sharedTodoUsers.Add(todo.CreatedByUser.UserName);
-            if (sharedTodoUsers.Contains(user.UserName)) sharedTodoUsers.Remove(user.UserName);
-            return sharedTodoUsers;
-        }
 
         private static void ValidateTodo(TodoEntity todo)
         {
@@ -353,7 +367,7 @@ namespace ServiceModule.Service
                     }
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
-                  
+
 
                 }
                 catch (Exception ex)
@@ -379,7 +393,7 @@ namespace ServiceModule.Service
                         await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     }
                     await tx.CommitAsync().ConfigureAwait(false);
-                   
+
                 }
                 catch (Exception ex)
                 {
