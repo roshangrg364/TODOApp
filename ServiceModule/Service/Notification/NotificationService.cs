@@ -106,7 +106,7 @@ namespace ServiceModule.Service
                     _notificationRepo.Update(notification);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
-                    var todoCount = await _notificationRepo.GetQueryable().Where(a => !a.MarkedAsRead && a.UserId == userId).CountAsync().ConfigureAwait(false);
+                    var todoCount = await GetNotificationCount(userId).ConfigureAwait(false);
                     return new NotificationResponseDto { TodoId = notification.TodoId,TodoCount = todoCount };
 
                 }

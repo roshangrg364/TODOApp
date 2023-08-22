@@ -235,19 +235,12 @@ namespace ServiceModule.Service
                     var todoHistory = AddTodoHistory(todo, user, dto.Comment, TodoHistory.StatusClosed);
                     _todoRepo.Update(todo);
                     await _todoHistoryRepo.InsertAsync(todoHistory).ConfigureAwait(false);
-                    var usersToSendNotifications = todo.SharedTodos.Select(a => a.User).ToList();
-                    usersToSendNotifications.Add(todo.CreatedByUser);
-                   if (usersToSendNotifications.Contains(user)) usersToSendNotifications.Remove(user);
-
-                    foreach (var sharedUser in usersToSendNotifications)
-                    {
-                        var notification = new Notification(sharedUser, $"Todo ({todo.Title}) has been completed", todo);
-                        await _notificationRepo.InsertAsync(notification).ConfigureAwait(false);
-                    }
+                    var notificationComment = $"Todo ({todo.Title}) has been completed";
+                    List<User> usersToSendNotifications = await AddNotifications(todo, user,notificationComment).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
                     var todoDetails = await GetTodoDetails(dto.TodoId, dto.UserId).ConfigureAwait(false);
-                    List<string> sharedTodoUsers = usersToSendNotifications.Select(a=>a.UserName).ToList();
+                    List<string> sharedTodoUsers = usersToSendNotifications.Select(a => a.UserName).ToList();
                     return new TodoCompleteDto
                     {
                         SharedTodoUsersList = sharedTodoUsers,
@@ -265,6 +258,7 @@ namespace ServiceModule.Service
 
         }
 
+
         public async Task<SharedTodoUserAndLatestCommentDto> CommentOnTodo(TodoHistoryCreateDto dto)
         {
             using (var tx = await _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
@@ -276,15 +270,8 @@ namespace ServiceModule.Service
                     var user = await _userRepo.GetByIdString(dto.UserId).ConfigureAwait(false) ?? throw new UserNotFoundException();
                     if (string.IsNullOrEmpty(dto.Comment)) throw new CustomException("Comment is required");
                     var sharedTodoHistory = AddTodoHistory(todo, user, dto.Comment, TodoHistory.StatusCommented);
-                    var usersToSendNotifications = todo.SharedTodos.Select(a => a.User).ToList();
-                    usersToSendNotifications.Add(todo.CreatedByUser);
-                    if (usersToSendNotifications.Contains(user)) usersToSendNotifications.Remove(user);
-
-                    foreach (var sharedUser in usersToSendNotifications)
-                    {
-                        var notification = new Notification(sharedUser, $"A new comment Added on Todo ({todo.Title})", todo);
-                        await _notificationRepo.InsertAsync(notification).ConfigureAwait(false);
-                    }
+                    var notificationComment = $"A new comment Added on Todo ({todo.Title})";
+                    List<User> usersToSendNotifications = await AddNotifications(todo, user, notificationComment).ConfigureAwait(false);
                     await _todoHistoryRepo.InsertAsync(sharedTodoHistory).ConfigureAwait(false);
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     await tx.CommitAsync().ConfigureAwait(false);
@@ -312,6 +299,20 @@ namespace ServiceModule.Service
         }
 
 
+        private async Task<List<User>> AddNotifications(TodoEntity todo, User user, string notificationComment)
+        {
+            var usersToSendNotifications = todo.SharedTodos.Select(a => a.User).ToList();
+            usersToSendNotifications.Add(todo.CreatedByUser);
+            if (usersToSendNotifications.Contains(user)) usersToSendNotifications.Remove(user);
+
+            foreach (var sharedUser in usersToSendNotifications)
+            {
+                var notification = new Notification(sharedUser, notificationComment, todo);
+                await _notificationRepo.InsertAsync(notification).ConfigureAwait(false);
+            }
+
+            return usersToSendNotifications;
+        }
         private static void ValidateTodo(TodoEntity todo)
         {
             if (todo.IsCompleted) throw new CustomException("Todo Already Completed");

@@ -10,4 +10,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entity\Email\" />
+    <Folder Include="RepositoryInterface\Email\" />
+    <Folder Include="ServiceInterface\Email\" />
+  </ItemGroup>
+
 </Project>
