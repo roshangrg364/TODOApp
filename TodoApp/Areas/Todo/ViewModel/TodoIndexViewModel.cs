@@ -14,7 +14,6 @@
     public class TodoFilterModel
     {
         public string? Title { get; set; } 
-        public string? Title123 { get; set; } 
         public string? Status { get; set; } 
         public string currentUserId { get; set; }
         public DateTime FromDate { get; set; }
