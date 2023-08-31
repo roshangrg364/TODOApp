@@ -26,6 +26,9 @@ namespace InfrastructureModule.Context
             builder.ApplyConfiguration(new TodoHistoryMapping());
             builder.ApplyConfiguration(new TodoRemainderMapping());
             builder.ApplyConfiguration(new NotificationMapping());
+            builder.ApplyConfiguration(new EmailMessageMapping());
+            builder.ApplyConfiguration(new EmailRecipeintMapping());
+            builder.ApplyConfiguration(new SettingEntityMapping());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

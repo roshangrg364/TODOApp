@@ -15,6 +15,7 @@ namespace DomainModule.Dto.User
         public List<string> Roles { get; set; } = new List<string>();
         public string CurrentSiteDomain { get; set; }
         public bool IsEmailConfirmed { get; set; }
+        public string? EmailConfirmationTemplate { get; set; }
     }
     public class UserEditDto
     {
@@ -29,7 +30,6 @@ namespace DomainModule.Dto.User
 
     public class UserResponseDto
     {
-        public string EmailConfirmationLink { get; set; }
         public string UserId { get; set; }
     }
 }

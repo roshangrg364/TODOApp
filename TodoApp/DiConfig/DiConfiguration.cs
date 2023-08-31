@@ -27,6 +27,7 @@ namespace TodoApp.DiConfig
          services.AddScoped<TodoHistoryRepositoryInterface,TodoHistoryRepository>();
          services.AddScoped<TodoRemainderRepositoryInterface,TodoRemainderRepository>();
          services.AddScoped<NotificationRepositoryInterface,NotificationRepository>();
+         services.AddScoped<EmailMessageRepositoryInterface,EmailMessageRepository>();
         }
         private static void UseService(IServiceCollection services)
         {
@@ -37,6 +38,7 @@ namespace TodoApp.DiConfig
             services.AddScoped<SharedTodoServiceInterface, SharedTodoService>();
             services.AddScoped<DashboardServiceInterface, DashboardService>();
             services.AddScoped<NotificationServiceInterface, NotificationService>();
+            services.AddScoped<EmailMessageServiceInterface, EmailMessageService>();
         }
     }
 }

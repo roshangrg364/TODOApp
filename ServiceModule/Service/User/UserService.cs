@@ -21,16 +21,19 @@ namespace ServiceModule.Service
         private readonly UserRepositoryInterface _userRepo;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly EmailMessageServiceInterface _emailMessageService;
         private readonly IUnitOfWork _unitOfWork;
         public UserService(UserRepositoryInterface userRepo,
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            EmailMessageServiceInterface emailMessageService)
         {
             _userRepo = userRepo;
             _userManager = userManager;
             _roleManager = roleManager;
             _unitOfWork = unitOfWork;
+            _emailMessageService = emailMessageService;
         }
         public async Task Activate(string id)
         {
@@ -82,9 +85,19 @@ namespace ServiceModule.Service
 
                         if (!dto.IsEmailConfirmed)
                         {
+                            if (string.IsNullOrEmpty(dto.EmailConfirmationTemplate)) throw new CustomException("No Email template found For email Confirmation");
                             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
                             var emailConfirmationLink = $"{dto.CurrentSiteDomain}/Account/Account/ConfirmEmail?email={user.Email}&token={System.Web.HttpUtility.UrlEncode(token)}";
-                            userReponseModel.EmailConfirmationLink = emailConfirmationLink;
+                            var Replacements = new Dictionary<string, string>();
+                            Replacements.Add("{User}", dto.Name);
+                            Replacements.Add("{ConfirmationLink}", emailConfirmationLink);
+                            foreach (var Replacement in Replacements)
+                            {
+                                dto.EmailConfirmationTemplate = dto.EmailConfirmationTemplate.Replace(Replacement.Key, Replacement.Value);
+                            }
+                            var emailMessageDto = new EmailMessageDto("Account Confirmation Link", dto.EmailConfirmationTemplate, "freeman18@ethereal.email", EmailMessage.HighPriority);
+                            emailMessageDto.EmailRecipients.Add(new EmailRecipientDto(dto.EmailAddress));
+                            await _emailMessageService.CreateEmailMessageAndSendEmail(emailMessageDto);
                         }
 
                     }

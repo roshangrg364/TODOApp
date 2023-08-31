@@ -66,6 +66,7 @@ builder.Services.AddMvc()
 
 builder.Services.ConfigureAuthentication();
 builder.Services.UseDIConfig();
+builder.Services.AddMemoryCache();
 builder.Services.Configure<CookiePolicyOptions>(
                options =>
                {

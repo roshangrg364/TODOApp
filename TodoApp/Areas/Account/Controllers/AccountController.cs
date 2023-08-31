@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using NToastNotify;
 using TodoApp.ViewModel;
 using ServiceModule.Service;
+using TodoApp.Extensions;
 
 namespace TodoApp.Areas.Account.Controllers
 {
@@ -116,12 +117,13 @@ namespace TodoApp.Areas.Account.Controllers
                     UserName = model.UserName,
                     Type = DomainModule.Entity.User.TypeCustomer,
                     CurrentSiteDomain = $"{Request.Scheme}://{Request.Host}",
-                    
                 };
-                var userReponse = await _userService.Create(createDto);
+                var userEmailConfirmationTemplate = this.RenderViewAsync("~/Areas/Account/Views/Account/ConfirmEmailPage.cshtml", new ConfirmEmailPageModel(), true).GetAwaiter().GetResult();
 
+                createDto.EmailConfirmationTemplate = userEmailConfirmationTemplate;
+                  var userReponse = await _userService.Create(createDto);
                 _notify.AddSuccessToastMessage("created succesfully. Please Confirm your account");
-                return RedirectToAction("ConfirmEmailPage", "Account", new { area = "Account", confirmationLink = userReponse.EmailConfirmationLink });
+                return RedirectToAction(nameof(Login));
             }
             catch (Exception ex)
             {
