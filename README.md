@@ -1,4 +1,4 @@
-# TODOApp
+# TODOApp (Admin Roshan Gurung)
 ## OverView
 - Todo App is a app that allows user to register and keep record of their daily task in a organized way
 - User can share their todo with other and collaborate with them.
