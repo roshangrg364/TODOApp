@@ -1,4 +1,6 @@
-﻿using InfrastructureModule.Mapping;
+﻿using DomainModule.Entity;
+using InfrastructureModule.Mapping;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +19,15 @@ namespace InfrastructureModule.Context
         {
             _configuration = configuration;
         }
+        public DbSet<TodoEntity> Todos { get; set; }
+        public DbSet<SharedTodoEntity> SharedTodos { get; set; }
+        public DbSet<TodoRemainder> TodoRemainders { get; set; }
+        public DbSet<TodoHistory> TodoHistories { get; set; }
+        public DbSet<EmailMessage> EmailMessages { get; set; }
+        public DbSet<EmailRecipient> EmailRecipients { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Notification> Setting { get; set; }
+ 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -36,7 +47,7 @@ namespace InfrastructureModule.Context
             var conString = _configuration.GetConnectionString("DefaultConnection");
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseLazyLoadingProxies().UseSqlServer(conString, a => a.MigrationsAssembly("PermissionBasedAuthorization"));
+                optionsBuilder.UseLazyLoadingProxies().UseSqlServer(conString);
             }
         }
     }

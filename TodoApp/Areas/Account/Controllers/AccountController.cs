@@ -74,15 +74,17 @@ namespace TodoApp.Areas.Account.Controllers
                         {
                             return LocalRedirect(model.ReturnUrl);
                         }
+                        //set AttemptsLogin to 0;
                         return RedirectToAction("Index", "Home", new {area=""});
                     }
                     else if(isSucceeded.IsLockedOut)
                     {
+                        await _userService.Deactivate(user.Id); ;
                         return RedirectToAction(nameof(LockOut));
                     }
                     else
                     {
-                        _notify.AddErrorToastMessage("Incorrect UserName Or Password");
+                        _notify.AddErrorToastMessage($"Incorrect UserName Or Password.Remaining Attempts: {5-user.AccessFailedCount}");
                     }
                   
                 }
