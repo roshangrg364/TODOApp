@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class UserRepository:BaseRepository<User>,UserRepositoryInterface
+    public class UserRepository:BaseRepository<User>,IUserRepository
     {
         public UserRepository(AppDbContext context):base(context)
         {

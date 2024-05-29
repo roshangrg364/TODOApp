@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace ServiceModule.Service
 {
-    public class SettingService : SettingServiceInterface
+    public class SettingService : ISettingService
     {
 
-        private readonly SettingRepositoryInterface _settingRepository;
+        private readonly ISettingRepository _settingRepository;
         private readonly IMemoryCache _memoryCache;
         private readonly IUnitOfWork _unitOfWork;
 
-        public SettingService(SettingRepositoryInterface settingRepository,
+        public SettingService(ISettingRepository settingRepository,
             IMemoryCache memoryCache,
             IUnitOfWork unitOfWork)
         {

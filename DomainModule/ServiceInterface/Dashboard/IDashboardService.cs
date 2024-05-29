@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface EmailMessageServiceInterface
+    public interface IDashboardService
     {
-        Task CreateEmailMessage(EmailMessageDto dto);
-        Task CreateEmailMessageAndSendEmail(EmailMessageDto dto);
+        Task<DashboardDto> GetDashboardData(string userId);
     }
 }

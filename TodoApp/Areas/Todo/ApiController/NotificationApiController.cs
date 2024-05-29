@@ -11,8 +11,8 @@ namespace TodoApp.Areas.Todo.ApiController
     [ApiController]
     public class NotificationApiController : Controller
     {
-        private readonly NotificationServiceInterface _notificationService;
-        public NotificationApiController(NotificationServiceInterface notificationService)
+        private readonly INotificationService _notificationService;
+        public NotificationApiController(INotificationService notificationService)
         {
             _notificationService = notificationService;
         }

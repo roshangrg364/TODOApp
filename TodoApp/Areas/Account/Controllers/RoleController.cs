@@ -23,11 +23,11 @@ namespace TodoApp.Areas.Account.Controllers
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
-        private readonly RoleServiceInterface _roleService;
+        private readonly IRoleService _roleService;
         private readonly ILogger<RoleController> _logger;
         private readonly IToastNotification _notify;
         public RoleController(RoleManager<IdentityRole> roleManager,
-          RoleServiceInterface roleService,
+          IRoleService roleService,
           ILogger<RoleController> logger,
           IToastNotification notify,
           UserManager<User> userManager)

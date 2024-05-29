@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface NotificationServiceInterface
+    public interface INotificationService
     {
         Task<int> GetNotificationCount(string userId);
         Task<NotificationsWithCountDto> GetLatestNotifications(string userId);

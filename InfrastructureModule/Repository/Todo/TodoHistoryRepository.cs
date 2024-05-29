@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class TodoHistoryRepository:BaseRepository<TodoHistory>, TodoHistoryRepositoryInterface
+    public class TodoHistoryRepository:BaseRepository<TodoHistory>, ITodoHistoryRepository
     {
         public TodoHistoryRepository(AppDbContext context):base(context)
         {

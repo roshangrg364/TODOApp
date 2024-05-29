@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface ApplicationSettingServiceInterface
+    public interface IApplicationSettingService
     {
         //Email
         Task<string?> GetEmailUserName();

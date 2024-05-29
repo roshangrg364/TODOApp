@@ -11,9 +11,9 @@ namespace TodoApp.Areas.Account.Controllers
     [Area("Account")]
     public class PermissionController : Controller
     {
-        private readonly RoleServiceInterface _roleService;
+        private readonly IRoleService _roleService;
 
-        public PermissionController(RoleServiceInterface roleService)
+        public PermissionController(IRoleService roleService)
         {
             _roleService = roleService;
         }

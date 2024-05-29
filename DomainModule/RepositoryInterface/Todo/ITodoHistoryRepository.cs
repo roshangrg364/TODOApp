@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.RepositoryInterface
 {
-    public interface SettingRepositoryInterface:BaseRepositoryInterface<SettingEntity>
+    public interface ITodoHistoryRepository:IBaseRepository<TodoHistory>
     {
-        Task<SettingEntity?> GetByKeyAndGroup(string key, string group);
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.RepositoryInterface
 {
-    public interface TodoRepositoryInterface:BaseRepositoryInterface<TodoEntity>
+    public interface INotificationRepository:IBaseRepository<Notification>
     {
     }
 }

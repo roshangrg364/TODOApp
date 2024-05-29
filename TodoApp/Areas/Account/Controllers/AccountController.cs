@@ -25,14 +25,14 @@ namespace TodoApp.Areas.Account.Controllers
     {
         private readonly ILogger<AccountController> _logger;
         private readonly UserManager<User> _userManager;
-        private readonly UserServiceInterface _userService;
+        private readonly IUserService _userService;
         private readonly SignInManager<User> _signInManager;
         private readonly IToastNotification _notify;
         public AccountController(ILogger<AccountController> logger,
             IToastNotification notify,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-           UserServiceInterface userService)
+           IUserService userService)
         {
             _logger = logger;
             _notify = notify;

@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace ServiceModule.Service
 {
-    public class NotificationService : NotificationServiceInterface
+    public class NotificationService : INotificationService
     {
-        private readonly NotificationRepositoryInterface _notificationRepo;
+        private readonly INotificationRepository _notificationRepo;
         private readonly IUnitOfWork _unitOfWork;
-        public NotificationService(NotificationRepositoryInterface notificationRepo,
+        public NotificationService(INotificationRepository notificationRepo,
             IUnitOfWork unitOfWork)
         {
             _notificationRepo = notificationRepo;

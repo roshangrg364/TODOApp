@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class NotificationRepository:BaseRepository<Notification>,NotificationRepositoryInterface
+    public class NotificationRepository:BaseRepository<Notification>,INotificationRepository
     {
         public NotificationRepository(AppDbContext context):base(context)
         {

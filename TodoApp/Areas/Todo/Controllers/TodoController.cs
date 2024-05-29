@@ -21,15 +21,15 @@ namespace TodoApp.Areas.Todo.Controllers
     public class TodoController : Controller
     {
         private readonly ILogger<TodoController> _logger;
-        private readonly TodoServiceInterface _todoService;
-        private readonly SharedTodoServiceInterface _sharedTodoService;
+        private readonly ITodoService _todoService;
+        private readonly ISharedTodoService _sharedTodoService;
         private readonly IToastNotification _notify;
         private readonly UserManager<User> _userManager;
 
         private readonly IHubContext<TodoHub> _hub;
         public TodoController(ILogger<TodoController> logger,
-            TodoServiceInterface todoService, IToastNotification notify,
-            SharedTodoServiceInterface sharedTodoService,
+            ITodoService todoService, IToastNotification notify,
+            ISharedTodoService sharedTodoService,
             IHubContext<TodoHub> hub, UserManager<User> userManager)
         {
             _logger = logger;

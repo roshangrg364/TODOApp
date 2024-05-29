@@ -18,15 +18,15 @@ namespace TodoApp.Areas.Account.Controllers
     [Area("Account")]
     public class UserController : Controller
     {
-        private readonly UserRepositoryInterface _userRepo;
+        private readonly IUserRepository _userRepo;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IToastNotification _notify;
-        private readonly UserServiceInterface _userService;
+        private readonly IUserService _userService;
         private readonly ILogger<UserController> _logger;
-        public UserController(UserRepositoryInterface userRepository,
+        public UserController(IUserRepository userRepository,
             IToastNotification notify,
-            UserServiceInterface userService,
+            IUserService userService,
             ILogger<UserController> logger,
             RoleManager<IdentityRole> roleManager,
             UserManager<User> userManager

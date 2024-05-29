@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class TodoRemainderRepository:BaseRepository<TodoRemainder>, TodoRemainderRepositoryInterface
+    public class TodoRemainderRepository:BaseRepository<TodoRemainder>, ITodoRemainderRepository
     {
         public TodoRemainderRepository(AppDbContext context):base(context)
         {

@@ -8,8 +8,8 @@ namespace TodoApp.Areas.Todo.Controllers
     [Area("Todo")]
     public class NotificationController : Controller
     {
-        private readonly NotificationServiceInterface _notificationService;
-        public NotificationController(NotificationServiceInterface notificationService)
+        private readonly INotificationService _notificationService;
+        public NotificationController(INotificationService notificationService)
         {
             _notificationService = notificationService;
         }

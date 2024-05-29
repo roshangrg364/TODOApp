@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface SharedTodoServiceInterface
+    public interface IEmailMessageService
     {
-        Task Create(SharedTodoCreateDto dto);
-        Task<List<SharedTodoDto>> GetAllTodosSharedToCurrentUser(SharedTodoFilterDto dto);
-       
+        Task CreateEmailMessage(EmailMessageDto dto);
+        Task CreateEmailMessageAndSendEmail(EmailMessageDto dto);
     }
 }

@@ -20,25 +20,25 @@ namespace TodoApp.DiConfig
         }
         private static void UseRepository(IServiceCollection services)
         {
-         services.AddScoped<UserRepositoryInterface,UserRepository>();
-         services.AddScoped<RoleRepositoryInterface,RoleRepository>();
-         services.AddScoped<TodoRepositoryInterface,TodoRepository>();
-         services.AddScoped<SharedTodoRepositoryInterface,SharedTodoRepository>();
-         services.AddScoped<TodoHistoryRepositoryInterface,TodoHistoryRepository>();
-         services.AddScoped<TodoRemainderRepositoryInterface,TodoRemainderRepository>();
-         services.AddScoped<NotificationRepositoryInterface,NotificationRepository>();
-         services.AddScoped<EmailMessageRepositoryInterface,EmailMessageRepository>();
+         services.AddScoped<IUserRepository,UserRepository>();
+         services.AddScoped<IRoleRepository,RoleRepository>();
+         services.AddScoped<ITodoRepository,TodoRepository>();
+         services.AddScoped<ISharedTodoRepository,SharedTodoRepository>();
+         services.AddScoped<ITodoHistoryRepository,TodoHistoryRepository>();
+         services.AddScoped<ITodoRemainderRepository,TodoRemainderRepository>();
+         services.AddScoped<INotificationRepository,NotificationRepository>();
+         services.AddScoped<IEmailMessageRepository,EmailMessageRepository>();
         }
         private static void UseService(IServiceCollection services)
         {
             services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<UserServiceInterface, UserService>();
-            services.AddScoped<RoleServiceInterface, RoleService>();
-            services.AddScoped<TodoServiceInterface, TodoService>();
-            services.AddScoped<SharedTodoServiceInterface, SharedTodoService>();
-            services.AddScoped<DashboardServiceInterface, DashboardService>();
-            services.AddScoped<NotificationServiceInterface, NotificationService>();
-            services.AddScoped<EmailMessageServiceInterface, EmailMessageService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<ITodoService, TodoService>();
+            services.AddScoped<ISharedTodoService, SharedTodoService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IEmailMessageService, EmailMessageService>();
         }
     }
 }

@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 
 namespace ServiceModule.Service
 {
-    public class EmailMessageService : EmailMessageServiceInterface
+    public class EmailMessageService : IEmailMessageService
     {
-        private readonly EmailMessageRepositoryInterface _emailMessageRepo;
+        private readonly IEmailMessageRepository _emailMessageRepo;
         private readonly IUnitOfWork _unitOfWork;
-        public EmailMessageService(EmailMessageRepositoryInterface emailMessageRepo,
+        public EmailMessageService(IEmailMessageRepository emailMessageRepo,
             IUnitOfWork unitOfWork)
         {
             _emailMessageRepo = emailMessageRepo;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface TodoServiceInterface
+    public interface ITodoService
     {
         Task<int> Create(TodoCreateDto dto);
         Task Update(TodoEditDto dto);

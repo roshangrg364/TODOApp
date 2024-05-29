@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 namespace BaseModule.Repository.User
 {
-  public  class RoleRepository:BaseRepository<IdentityRole>, RoleRepositoryInterface
+  public  class RoleRepository:BaseRepository<IdentityRole>, IRoleRepository
     {
         public RoleRepository(AppDbContext dbContext) : base(dbContext)
         {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface UserServiceInterface
+    public interface IUserService
     {
         Task<UserResponseDto> Create(UserDto dto);
         Task Edit(UserEditDto dto);

@@ -20,10 +20,10 @@ namespace TodoApp.Areas.Todo.ApiController
     [ApiController]
     public class TodoApiController : Controller
     {
-        private readonly TodoServiceInterface _todoService;
+        private readonly ITodoService _todoService;
         private readonly IHubContext<TodoHub> _hub;
    
-        public TodoApiController(TodoServiceInterface todoService,
+        public TodoApiController(ITodoService todoService,
             IHubContext<TodoHub> hub)
         {
             _todoService = todoService;

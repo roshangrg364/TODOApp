@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class TodoRepository:BaseRepository<TodoEntity>,TodoRepositoryInterface
+    public class TodoRepository:BaseRepository<TodoEntity>,ITodoRepository
     {
         public TodoRepository(AppDbContext context):base(context)
         {

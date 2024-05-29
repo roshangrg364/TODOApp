@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace ServiceModule.Service
 {
-    public class ApplicationSettingService : ApplicationSettingServiceInterface
+    public class ApplicationSettingService : IApplicationSettingService
     {
-        private readonly SettingServiceInterface _settingService;
+        private readonly ISettingService _settingService;
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
-        public ApplicationSettingService(SettingServiceInterface settingService,
+        public ApplicationSettingService(ISettingService settingService,
             IUnitOfWork unitOfWork)
         {
             _settingService = settingService;

@@ -16,18 +16,18 @@ using System.Threading.Tasks;
 
 namespace ServiceModule.Service
 {
-    public class UserService : UserServiceInterface
+    public class UserService : IUserService
     {
-        private readonly UserRepositoryInterface _userRepo;
+        private readonly IUserRepository _userRepo;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly EmailMessageServiceInterface _emailMessageService;
+        private readonly IEmailMessageService _emailMessageService;
         private readonly IUnitOfWork _unitOfWork;
-        public UserService(UserRepositoryInterface userRepo,
+        public UserService(IUserRepository userRepo,
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
             IUnitOfWork unitOfWork,
-            EmailMessageServiceInterface emailMessageService)
+            IEmailMessageService emailMessageService)
         {
             _userRepo = userRepo;
             _userManager = userManager;

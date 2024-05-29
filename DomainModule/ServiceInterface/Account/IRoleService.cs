@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface RoleServiceInterface
+    public interface IRoleService
     {
         Task Create(RoleDto dto);
         Task Edit(RoleEditDto dto);

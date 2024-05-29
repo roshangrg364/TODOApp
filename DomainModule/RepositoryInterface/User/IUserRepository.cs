@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.RepositoryInterface
 {
-    public interface UserRepositoryInterface:BaseRepositoryInterface<User>
+    public interface IUserRepository:IBaseRepository<User>
     {
         Task<User?> GetByMobile(string mobile);
         Task<User?> GetByEmail(string email);

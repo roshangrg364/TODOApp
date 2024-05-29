@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class SettingRepository:BaseRepository<SettingEntity>,SettingRepositoryInterface
+    public class SettingRepository:BaseRepository<SettingEntity>,ISettingRepository
     {
         private readonly IMemoryCache _memoryCache;
         public SettingRepository(AppDbContext context, IMemoryCache memoryCache) :base(context)

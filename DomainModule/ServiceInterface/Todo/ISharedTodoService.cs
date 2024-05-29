@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface DashboardServiceInterface
+    public interface ISharedTodoService
     {
-        Task<DashboardDto> GetDashboardData(string userId);
+        Task Create(SharedTodoCreateDto dto);
+        Task<List<SharedTodoDto>> GetAllTodosSharedToCurrentUser(SharedTodoFilterDto dto);
+       
     }
 }

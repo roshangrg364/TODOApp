@@ -17,22 +17,22 @@ using System.Threading.Tasks;
 
 namespace ServiceModule.Service
 {
-    public class TodoService : TodoServiceInterface
+    public class TodoService : ITodoService
     {
-        private readonly TodoRepositoryInterface _todoRepo;
-        private readonly UserRepositoryInterface _userRepo;
+        private readonly ITodoRepository _todoRepo;
+        private readonly IUserRepository _userRepo;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly TodoHistoryRepositoryInterface _todoHistoryRepo;
-        private readonly SharedTodoRepositoryInterface _sharedTodoRepo;
-        private readonly TodoRemainderRepositoryInterface _todoRemainderRepo;
-        private readonly NotificationRepositoryInterface _notificationRepo;
-        public TodoService(TodoRepositoryInterface todoRepo,
-            UserRepositoryInterface userRepo,
+        private readonly ITodoHistoryRepository _todoHistoryRepo;
+        private readonly ISharedTodoRepository _sharedTodoRepo;
+        private readonly ITodoRemainderRepository _todoRemainderRepo;
+        private readonly INotificationRepository _notificationRepo;
+        public TodoService(ITodoRepository todoRepo,
+            IUserRepository userRepo,
             IUnitOfWork unitOfWork,
-            TodoHistoryRepositoryInterface todoHistoryRepo,
-            SharedTodoRepositoryInterface sharedTodoRepo,
-            TodoRemainderRepositoryInterface todoRemainderRepo,
-            NotificationRepositoryInterface notificationRepo)
+            ITodoHistoryRepository todoHistoryRepo,
+            ISharedTodoRepository sharedTodoRepo,
+            ITodoRemainderRepository todoRemainderRepo,
+            INotificationRepository notificationRepo)
         {
             _todoRepo = todoRepo;
             _userRepo = userRepo;
@@ -98,7 +98,6 @@ namespace ServiceModule.Service
                         Description = dto.Description
                     };
                     await _todoRepo.InsertAsync(todo).ConfigureAwait(false);
-
                     await _unitOfWork.CompleteAsync().ConfigureAwait(false);
                     var todoHistory = AddTodoHistory(todo, user, $"Todo Created By {user.Name}", TodoHistory.StatusOpened);
                     await _todoHistoryRepo.InsertAsync(todoHistory).ConfigureAwait(false);

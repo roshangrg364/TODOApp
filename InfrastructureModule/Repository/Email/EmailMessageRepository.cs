@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class EmailMessageRepository:BaseRepository<EmailMessage>, EmailMessageRepositoryInterface
+    public class EmailMessageRepository:BaseRepository<EmailMessage>, IEmailMessageRepository
     {
         public EmailMessageRepository(AppDbContext context):base(context)
         {

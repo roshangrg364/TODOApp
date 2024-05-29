@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.BaseRepo
 {
-   public  interface BaseRepositoryInterface<T> where T : class
+   public  interface IBaseRepository<T> where T : class
     {
         Task<IList<T>> GetAllAsync();
         Task InsertAsync(T entity);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.ServiceInterface
 {
-    public interface SettingServiceInterface
+    public interface ISettingService
     {
         Task<string> Get(string key, string group, string defaultValue = "");
         Task Set(string key, string group, string value);

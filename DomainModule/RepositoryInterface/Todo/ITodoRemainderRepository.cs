@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.RepositoryInterface
 {
-    public interface SharedTodoRepositoryInterface:BaseRepositoryInterface<SharedTodoEntity>
+    public interface ITodoRemainderRepository:IBaseRepository<TodoRemainder>
     {
     }
 }

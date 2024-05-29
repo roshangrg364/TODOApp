@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class BaseRepository<T> : BaseRepositoryInterface<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         private readonly AppDbContext _context;
         public BaseRepository(AppDbContext context)

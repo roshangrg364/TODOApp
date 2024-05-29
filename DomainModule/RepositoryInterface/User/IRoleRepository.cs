@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.Repository
 {
-  public  interface RoleRepositoryInterface:BaseRepositoryInterface<IdentityRole>
+  public  interface IRoleRepository:IBaseRepository<IdentityRole>
     {       
 
     }

@@ -10,8 +10,8 @@ namespace TodoApp.Controllers.api
     [ApiController]
     public class DashboardApiController : ControllerBase
     {
-        private readonly DashboardServiceInterface _dashboardService;
-        public DashboardApiController(DashboardServiceInterface dashboardService)
+        private readonly IDashboardService _dashboardService;
+        public DashboardApiController(IDashboardService dashboardService)
         {
             _dashboardService = dashboardService;
         }

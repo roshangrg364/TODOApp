@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace DomainModule.RepositoryInterface
 {
-    public interface EmailMessageRepositoryInterface:BaseRepositoryInterface<EmailMessage>
+    public interface ISettingRepository:IBaseRepository<SettingEntity>
     {
+        Task<SettingEntity?> GetByKeyAndGroup(string key, string group);
     }
 }

@@ -13,20 +13,20 @@ using System.Threading.Tasks;
 
 namespace ServiceModule.Service
 {
-    public class SharedTodoService : SharedTodoServiceInterface
+    public class SharedTodoService : ISharedTodoService
     {
-        private readonly SharedTodoRepositoryInterface _sharedTodoRepo;
-        private readonly TodoHistoryRepositoryInterface _todoHistoryRepo;
-        private readonly NotificationRepositoryInterface _notificationRepo;
-        private readonly TodoRepositoryInterface _todoRepo;
-        private readonly UserRepositoryInterface _userRepo;
+        private readonly ISharedTodoRepository _sharedTodoRepo;
+        private readonly ITodoHistoryRepository _todoHistoryRepo;
+        private readonly INotificationRepository _notificationRepo;
+        private readonly ITodoRepository _todoRepo;
+        private readonly IUserRepository _userRepo;
         private readonly IUnitOfWork _unitOfWork;
-        public SharedTodoService(SharedTodoRepositoryInterface sharedTodoRepo,
-            TodoRepositoryInterface todoRepo,
+        public SharedTodoService(ISharedTodoRepository sharedTodoRepo,
+            ITodoRepository todoRepo,
             IUnitOfWork unitOfWork,
-            UserRepositoryInterface userRepo,
-            TodoHistoryRepositoryInterface todoHistoryRepo,
-            NotificationRepositoryInterface notificationRepo)
+            IUserRepository userRepo,
+            ITodoHistoryRepository todoHistoryRepo,
+            INotificationRepository notificationRepo)
         {
             _sharedTodoRepo = sharedTodoRepo;
             _todoRepo = todoRepo;

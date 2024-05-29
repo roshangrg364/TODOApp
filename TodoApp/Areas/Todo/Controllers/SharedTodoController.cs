@@ -11,10 +11,10 @@ namespace TodoApp.Areas.Todo.Controllers
     [Area("Todo")]
     public class SharedTodoController : Controller
     {
-        private readonly TodoServiceInterface _todoService;
-        private readonly SharedTodoServiceInterface _sharedTodoService;
-        public SharedTodoController(TodoServiceInterface todoService,
-            SharedTodoServiceInterface sharedTodoService)
+        private readonly ITodoService _todoService;
+        private readonly ISharedTodoService _sharedTodoService;
+        public SharedTodoController(ITodoService todoService,
+            ISharedTodoService sharedTodoService)
         {
             _todoService = todoService;
             _sharedTodoService = sharedTodoService;

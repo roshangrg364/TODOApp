@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 
 namespace ServiceModule.Service
 {
-    public class DashboardService : DashboardServiceInterface
+    public class DashboardService : IDashboardService
     {
-        private readonly TodoRepositoryInterface _todoRepo;
-        private readonly SharedTodoRepositoryInterface _sharedTodoRepo;
-        private readonly UserRepositoryInterface _userRepo;
-        public DashboardService(SharedTodoRepositoryInterface sharedTodoRepo, UserRepositoryInterface userRepo, TodoRepositoryInterface todoRepo)
+        private readonly ITodoRepository _todoRepo;
+        private readonly ISharedTodoRepository _sharedTodoRepo;
+        private readonly IUserRepository _userRepo;
+        public DashboardService(ISharedTodoRepository sharedTodoRepo, IUserRepository userRepo, ITodoRepository todoRepo)
         {
             _sharedTodoRepo = sharedTodoRepo;
             _todoRepo = todoRepo;

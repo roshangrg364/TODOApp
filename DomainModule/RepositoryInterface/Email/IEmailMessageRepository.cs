@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.RepositoryInterface
 {
-    public interface NotificationRepositoryInterface:BaseRepositoryInterface<Notification>
+    public interface IEmailMessageRepository:IBaseRepository<EmailMessage>
     {
     }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureModule.Repository
 {
-    public class SharedTodoRepository:BaseRepository<SharedTodoEntity>,SharedTodoRepositoryInterface
+    public class SharedTodoRepository:BaseRepository<SharedTodoEntity>,ISharedTodoRepository
     {
         public SharedTodoRepository( AppDbContext context):base(context)
         {

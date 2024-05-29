@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace DomainModule.Service
 {
-    public class RoleService : RoleServiceInterface
+    public class RoleService : IRoleService
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
